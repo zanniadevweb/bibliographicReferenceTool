@@ -1,12 +1,45 @@
 <!DOCTYPE HTML>
 <html lang="en">
 	<head>
+		<!-- https://www.zotero.org/support/dev/web_api/v3/basics -->
 		<title>Ausonius Bibliography Converter - Alexandre ZANNI</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
-		<link rel="stylesheet" href="assets/css/style.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
+	<style>
+	body {
+	  font-family: 'Google Sans', sans-serif;
+	  margin: 40px
+	}
+
+	multi-input {
+	  display: inline-block;
+	  margin: 0 20px 20px 0;
+	}
+
+	button {
+	  background-color: #eee;
+	  border: 1px solid #ddd;
+	  font-size: 16px;
+	  height: 30px;
+	  margin: 0 10px 20px 0;
+	}
+
+	body > div {
+	  align-items: center;
+	  display: flex;
+	}
+
+	label {
+	  margin: 0 20px 20px 0;
+	}
+
+	p {
+	  text-align: center;
+	}
+
+	</style>
+
 		<h1>Générateur automatique de références selon la norme Ausonius Éditions (Work In Progress)</h1>
 		<h3> Exemples de résultats :</h3>
 		Feugère, M., I., Rodriguez, A. dir. (2008): <i>Plaidoyer pour la ‘petite épigraphie’ : l’exemple de la cité de Béziers</i>, <i>Gallia Suppl. 59</i>, 467-489, Paris.
@@ -26,7 +59,18 @@
 		<h2> Remplir les champs ci-dessous avant de cliquer sur "Générer Résultat" :</h2>
 		<span id="spanSaisir"><h3>Référence principale :</h3></span>
 
-			 	Auteurs : <input type="text" id="inputAuthorsMain" value="" placeholder="Dupont| Sam,Igor; Dupont| Sarah" size="100" title="Type in a name">
+				<div style="display: flex; align-items: center">
+					<label>Auteurs :</label>
+					<multi-input>
+						<input id="inputAuthorsMain" list="speakers" placeholder="Dupont S." title="Type in a name">
+						<datalist id="speakers">
+							<!-- <option value="Banquo"></option>
+							<option value="Bishop Stokesly of London"></option> -->
+						</datalist>
+					</multi-input>
+					<button id="getMain">Ajouter +1</button>
+				</div>
+
 				</br>
 				Éd. ou Dir. ou Coll. : 		<select id="inputEdOrDirOrCollMain">
 																		<option value="0">éd.</option>
@@ -49,7 +93,19 @@
 		<span id="spanWithInsidePublicationInputs" style="display: none;">
 			<span id="spanSaisir" ><h3>Référence contenue dans la principale :</h3></span>
 
-					Auteurs : <input type="text" id="inputAuthorsInside" placeholder="Dupont; Sam,Igor/ Dupont; Sarah" size="100" title="Type in a name">
+				<div style="display: flex; align-items: center">
+					<label>Auteurs :</label>
+					<multi-input>
+						<input id="inputAuthorsInside" list="speakers" placeholder="Dupont S." title="Type in a name">
+						<datalist id="speakers">
+							<!-- <option value="Banquo"></option>
+							<option value="Bishop Stokesly of London"></option> -->
+						</datalist>
+					</multi-input>
+					<button id="getInside">Ajouter +1</button>
+				</div>
+
+					<p id="values"></p>
 					</br>
 					Éd. ou Dir. ou Coll. : 		<select id="inputEdOrDirOrCollInside">
 																			<option value="0">éd.</option>
@@ -129,45 +185,65 @@
 				var bibliographicReferenceMainPublication = '';
 				var bibliographicReferenceInsidePublication = '';
 				var wholeBibliographicReference = '';
-				var mainPublicationAuthorArray = [];
 
-				var mainPublicationSplit = mainPublication[0].split(';');
-				mainPublicationAuthorArray.push(mainPublication[0].split(';'));
-				// console.log(mainPublicationAuthorArray);
-				// 		console.log(mainPublicationAuthorArray);
+				var mainHasAuthors = false;
+				var insideHasAuthors = false;
+
+				if (mainPublication[0] !== '' && mainPublication[0] !== undefined) {
+						mainHasAuthors = true;
+				}
+				if (insidePublication[0] !== '' && insidePublication[0] !== undefined) {
+						insideHasAuthors = true;
+				}
 
 				if (insidePublication.length !== 0)
 				{
-					bibliographicReferenceMainPublication = createContainerPublication(mainPublication[0] != '' ? convertAuthors(mainPublication[0].split(',')) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[6]);
-					bibliographicReferenceInsidePublication = createInsidePublication(insidePublication[0] != '' ? convertAuthors(insidePublication[0].split(',')) : '', insidePublication[1], insidePublication[5], insidePublication[6]);
+					bibliographicReferenceMainPublication = createContainerPublication(mainHasAuthors ? addAuthors(mainPublication[0]) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[6]);
+					bibliographicReferenceInsidePublication = createInsidePublication(insideHasAuthors ? addAuthors(insidePublication[0]) : '', insidePublication[1], insidePublication[5], insidePublication[6]);
 					document.getElementById('spanResult').innerHTML = bibliographicReferenceInsidePublication + bibliographicReferenceMainPublication;
 				} else
 				{
-					bibliographicReferenceMainPublication = createSinglePublication(mainPublication[0] != '' ? convertAuthors(mainPublication[0].split(',')) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[5], mainPublication[6]);
+					bibliographicReferenceMainPublication = createSinglePublication(mainHasAuthors ? addAuthors(mainPublication[0]) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[5], mainPublication[6]);
 					document.getElementById('spanResult').innerHTML = bibliographicReferenceInsidePublication + bibliographicReferenceMainPublication;
 				}
 
 				wholeBibliographicReference = bibliographicReferenceInsidePublication + bibliographicReferenceMainPublication;
 			}
 
-			function convertAuthors(arrayOfAuthors)
+			function addAuthors(arrayOfAuthors)
 			{
-				// console.log('try convert');
-				arrayOfAuthors.forEach(function(authors){
-				//	console.log(authors.charAt(0).toUpperCase() + authors.toLowerCase().slice(1));
-					authors[0] = authors.charAt(0).toUpperCase() + authors.toLowerCase().slice(1); // familyname
-					authors[1] = authors.split(",").map(oneAuthor => oneAuthor.charAt(0).toUpperCase() + '.').toString(); // firstnameS
-				});
-
-				var authors = '';
-				authors = arrayOfAuthors.toString();
-
-				return authors;
+				return arrayOfAuthors.join(', ');
 			}
+
+			// function convertAuthors(arrayOfAuthors)
+			// {
+			// 	// console.log('try convert');
+			// 	arrayOfAuthors.forEach(function(authors){
+			// 	//	console.log(authors.charAt(0).toUpperCase() + authors.toLowerCase().slice(1));
+			// 		authors[0] = authors.charAt(0).toUpperCase() + authors.toLowerCase().slice(1); // familyname
+			// 		authors[1] = authors.split(",").map(oneAuthor => oneAuthor.charAt(0).toUpperCase() + '.').toString(); // firstnameS
+			// 	});
+			//
+			// 	var authors = '';
+			// 	authors = arrayOfAuthors.toString();
+			//
+			// 	return authors;
+			// }
 
 			function spaceBetweenAuthors(string)
 			{
 				return string.toString().replaceAll(',', ', ');
+			}
+
+			function getValuesMultiInput(inputAuthorsNode)
+			{
+				  var that = inputAuthorsNode;
+					const values = [];
+					const items = that.querySelectorAll('.item');
+					for (const item of items) {
+						values.push(item.textContent);
+					}
+					return values;
 			}
 
 			function buildReference()
@@ -175,7 +251,14 @@
 					var checkboxInsidePublication = document.getElementById('checkboxInsidePublication');
 					var isCheckedCheckboxInsidePublication = checkboxInsidePublication.checked;
 
-					var inputAuthorsMain = document.getElementById('inputAuthorsMain').value;
+					var inputAuthorsMainNode = document.getElementById('inputAuthorsMain').parentNode;
+					var inputAuthorsMain = '';
+
+					if (getValuesMultiInput(inputAuthorsMainNode).length > 0) {
+					  inputAuthorsMain = getValuesMultiInput(inputAuthorsMainNode);
+					}
+
+					// var inputAuthorsMain = document.getElementById('inputAuthorsMain').value;
 					var inputDateMain = document.getElementById('inputDateMain').value;
 					var inputEditorMain = document.getElementById('inputEditorMain').value;
 					var inputPagesMain = document.getElementById('inputPagesMain').value;
@@ -213,7 +296,13 @@
 
 					if (isCheckedCheckboxInsidePublication)
 					{
-						var inputAuthorsInside = document.getElementById('inputAuthorsInside').value;
+						var inputAuthorsInsideNode = document.getElementById('inputAuthorsInside').parentNode;
+						var inputAuthorsInside = '';
+						if (getValuesMultiInput(inputAuthorsInsideNode).length > 0) {
+							inputAuthorsInside = getValuesMultiInput(inputAuthorsInsideNode);
+						}
+
+						// var inputAuthorsInside = document.getElementById('inputAuthorsInside').value;
 						var inputDateInside = document.getElementById('inputDateInside').value;
 						var inputEditorInside = document.getElementById('inputEditorInside').value;
 						var inputPagesInside = document.getElementById('inputPagesInside').value;
@@ -321,6 +410,8 @@
 			}
 
 		</script>
+
+  <script src="assets/js/multi-input.js"></script>
 
 	</body>
 </html>
