@@ -141,7 +141,6 @@ class MultiInput extends HTMLElement {
       inputAuthorsValue = document.getElementById('inputAuthorsInside').value;
       getButton = document.getElementById('getInside');
     }
-    console.log(inputAuthorsValue);
 
     const itemToDelete = event.target.previousElementSibling;
     const value = this._input.value;
