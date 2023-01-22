@@ -80,9 +80,11 @@
 				</br>
 				Date de publication : <input type="text" id="inputDateMain" placeholder="2003" size="100" title="Type in a name">
 				</br>
+				Date de première publication (Facultatif) : <input type="text" id="inputDateFirstMain" placeholder="2003" size="100" title="Type in a name">
+				</br>
 				Éditeur / Collection : <input type="text" id="inputEditorMain" placeholder="Gallia Suppl. 59" size="100" title="Type in a name">
 				</br>
-				Pages : <input type="text" id="inputPagesMain" placeholder="467-489" size="100" title="Type in a name">
+				Pages (Facultatif) : <input type="text" id="inputPagesMain" placeholder="467-489" size="100" title="Type in a name">
 				</br>
 				Titre d'ouvrage : <input type="text" id="inputTitleMain" placeholder="Plaidoyer pour la ‘petite épigraphie’ : l’exemple de la cité de Béziers" size="100" title="Type in a name">
 				</br>
@@ -115,13 +117,15 @@
 					</br>
 					Date de publication : <input type="text" id="inputDateInside" placeholder="2003" size="100" title="Type in a name">
 					</br>
+					Date de première publication (Facultatif) : <input type="text" id="inputDateFirstInside" placeholder="2003" size="100" title="Type in a name">
+					</br>
 					Éditeur / Collection : <input type="text" id="inputEditorInside" placeholder="Gallia Suppl. 59" size="100" title="Type in a name">
 					</br>
-					Pages : <input type="text" id="inputPagesInside" placeholder="467-489" size="100" title="Type in a name">
+					<!-- Pages (Facultatif) : <input type="text" id="inputPagesInside" placeholder="467-489" size="100" title="Type in a name"> -->
 					</br>
 					Titre d'ouvrage : <input type="text" id="inputTitleInside" placeholder="Plaidoyer pour la ‘petite épigraphie’ : l’exemple de la cité de Béziers" size="100" title="Type in a name">
 					</br>
-					Lieu de publication : <input type="text" id="inputLocationInside" placeholder="Paris" size="100" title="Type in a name">
+					<!-- Lieu de publication : <input type="text" id="inputLocationInside" placeholder="Paris" size="100" title="Type in a name"> -->
 			</span>
 
 			<script>
@@ -129,55 +133,47 @@
 			var authors = [];
 			var mainPublication = [];
 			var insidePublication = [];
+			var facultativeDateOfFirstPublication = '';
+			var facultativePages = '';
 
-			// mainPublication = [
-			// 	[
-			// 		['feugère', 'Mathieu,Igor'],
-			// 		['Rodriguez', 'Andreas']
-			// 	],
-			// 	'2008',
-			// 	'Gallia Suppl. 59',
-			// 	'467-489',
-			// 	'Paris',
-			// 	'Plaidoyer pour la ‘petite épigraphie’ : l’exemple de la cité de Béziers',
-			// 	'dir.'
-			// ];
-			//
-			// insidePublication = [
-			// 	[
-			// 		['dUpOnT', 'Mathis'],
-			// 		['DUPONT', 'carina']
-			// 	],
-			// 	'2008',
-			// 	'Plaidoyer pour la ‘petite épigraphie’ : l’exemple de la cité de Béziers',
-			// 	'coll.'
-			// ];
-
-			// convertToAusoniusBibliographicNorms
-			// (
-			// 	mainPublication,
-			// 	[]
-			// );
-			//
-			// convertToAusoniusBibliographicNorms
-			// (
-			// 	mainPublication,
-			// 	insidePublication
-			// );
-
-			function createSinglePublication(authors, dateOfPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection)
+			function createSinglePublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection)
 			{
-				return spaceBetweenAuthors(authors) + " " +  editionOrDirectionOrCollection + " (" +  dateOfPublication + '): ' + titleOfWritingWork.italics() + ", " +   mainPublicationEditor.italics() + ", " + pagesFromMainPublication +  ", " + editingPublicationLocation + '.';
+				if (dateOfFirstPublication !== '') {
+					facultativeDateOfFirstPublication = ' [' +  dateOfFirstPublication + '] ';
+				} else {
+					facultativeDateOfFirstPublication = '';
+				}
+				if (pagesFromMainPublication !== '') {
+					facultativePages = ", " + pagesFromMainPublication;
+				} else {
+					facultativePages = '';
+				}
+				return spaceBetweenAuthors(authors) + " " +  editionOrDirectionOrCollection  + facultativeDateOfFirstPublication + " (" +  dateOfPublication + '): ' + titleOfWritingWork.italics() + ", " +   mainPublicationEditor.italics() + facultativePages +  ", " + editingPublicationLocation + '.';
 			}
 
-			function createContainerPublication(authors, dateOfPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, editionOrDirectionOrCollection)
+			function createContainerPublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection)
 			{
-				return spaceBetweenAuthors(authors) + " " + editionOrDirectionOrCollection + " " + dateOfPublication + ", " + mainPublicationEditor.italics() + ", " + pagesFromMainPublication +  ", " + editingPublicationLocation + '.';
+				if (dateOfFirstPublication !== '') {
+					facultativeDateOfFirstPublication = ' [' +  dateOfFirstPublication + '] ';
+				} else {
+					facultativeDateOfFirstPublication = '';
+				}
+				if (pagesFromMainPublication !== '') {
+					facultativePages = ", " + pagesFromMainPublication;
+				} else {
+					facultativePages = '';
+				}
+				return spaceBetweenAuthors(authors) + " " + editionOrDirectionOrCollection + facultativeDateOfFirstPublication + " " + dateOfPublication + ", " + mainPublicationEditor.italics() + facultativePages +  ", " + editingPublicationLocation + '.';
 			}
 
-			function createInsidePublication(authors, dateOfPublication, titleOfWritingWork, editionOrDirectionOrCollection)
+			function createInsidePublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection)
 			{
-					return spaceBetweenAuthors(authors) + " " +  editionOrDirectionOrCollection + " (" + dateOfPublication + "): " + "“" + titleOfWritingWork + "”" + "<b>" + " in: " + "</b>";
+				if (dateOfFirstPublication !== '') {
+					facultativeDateOfFirstPublication = ' [' +  dateOfFirstPublication + '] ';
+				} else {
+					facultativeDateOfFirstPublication = '';
+				}
+					return spaceBetweenAuthors(authors) + " " +  editionOrDirectionOrCollection + facultativeDateOfFirstPublication + " (" + dateOfPublication + "): " + "“" + titleOfWritingWork + "”" + "<b>" + " in: " + "</b>";
 			}
 
 			function convertToAusoniusBibliographicNorms(mainPublication, insidePublication)
@@ -198,12 +194,12 @@
 
 				if (insidePublication.length !== 0)
 				{
-					bibliographicReferenceMainPublication = createContainerPublication(mainHasAuthors ? addAuthors(mainPublication[0]) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[6]);
-					bibliographicReferenceInsidePublication = createInsidePublication(insideHasAuthors ? addAuthors(insidePublication[0]) : '', insidePublication[1], insidePublication[5], insidePublication[6]);
+					bibliographicReferenceMainPublication = createContainerPublication(mainHasAuthors ? addAuthors(mainPublication[0]) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[5], mainPublication[6], mainPublication[7]);
+					bibliographicReferenceInsidePublication = createInsidePublication(insideHasAuthors ? addAuthors(insidePublication[0]) : '', insidePublication[1], insidePublication[2], insidePublication[3], insidePublication[4], insidePublication[5], insidePublication[6], insidePublication[7]);
 					document.getElementById('spanResult').innerHTML = bibliographicReferenceInsidePublication + bibliographicReferenceMainPublication;
 				} else
 				{
-					bibliographicReferenceMainPublication = createSinglePublication(mainHasAuthors ? addAuthors(mainPublication[0]) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[5], mainPublication[6]);
+					bibliographicReferenceMainPublication = createSinglePublication(mainHasAuthors ? addAuthors(mainPublication[0]) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[5], mainPublication[6], mainPublication[7]);
 					document.getElementById('spanResult').innerHTML = bibliographicReferenceInsidePublication + bibliographicReferenceMainPublication;
 				}
 
@@ -258,8 +254,8 @@
 					  inputAuthorsMain = getValuesMultiInput(inputAuthorsMainNode);
 					}
 
-					// var inputAuthorsMain = document.getElementById('inputAuthorsMain').value;
 					var inputDateMain = document.getElementById('inputDateMain').value;
+					var inputDateFirstMain = document.getElementById('inputDateFirstMain').value;
 					var inputEditorMain = document.getElementById('inputEditorMain').value;
 					var inputPagesMain = document.getElementById('inputPagesMain').value;
 					var inputLocationMain = document.getElementById('inputLocationMain').value;
@@ -278,21 +274,7 @@
 
 					var mainPublication = [];
 
-					var inputAuthorsMainBis =
-											[
-												['feugère', 'Mathieu,Igor'],
-												['Rodriguez', 'Andreas']
-											];
-											// console.log(inputAuthorsMainBis);
-					// var inputDateMain = '2008';
-					// var inputEditorMain = 'Gallia Suppl. 59';
-					// var inputPagesMain = '467-489';
-					// var inputLocationMain = 'Paris';
-					// var inputTitleMain = 'Plaidoyer pour la ‘petite épigraphie’ : l’exemple de la cité de Béziers';
-					// var inputEdOrDirOrCollMain = 	'dir.';
-
-					mainPublication.push(inputAuthorsMain, inputDateMain, inputEditorMain, inputPagesMain, inputLocationMain, inputTitleMain, inputEdOrDirOrCollMain);
-					// console.log(mainPublication);
+					mainPublication.push(inputAuthorsMain, inputDateMain, inputDateFirstMain, inputEditorMain, inputPagesMain, inputLocationMain, inputTitleMain, inputEdOrDirOrCollMain);
 
 					if (isCheckedCheckboxInsidePublication)
 					{
@@ -302,11 +284,13 @@
 							inputAuthorsInside = getValuesMultiInput(inputAuthorsInsideNode);
 						}
 
-						// var inputAuthorsInside = document.getElementById('inputAuthorsInside').value;
 						var inputDateInside = document.getElementById('inputDateInside').value;
+						var inputDateFirstInside = document.getElementById('inputDateFirstInside').value;
 						var inputEditorInside = document.getElementById('inputEditorInside').value;
-						var inputPagesInside = document.getElementById('inputPagesInside').value;
-						var inputLocationInside = document.getElementById('inputLocationInside').value;
+						// var inputPagesInside = document.getElementById('inputPagesInside').value;
+						var inputPagesInside = '';
+						// var inputLocationInside = document.getElementById('inputLocationInside').value;
+						var inputLocationInside = '';
 						var inputTitleInside = document.getElementById('inputTitleInside').value;
 						var inputEdOrDirOrCollInside = document.getElementById('inputEdOrDirOrCollInside').value;
 						if (inputEdOrDirOrCollInside == 0)
@@ -322,44 +306,8 @@
 
 						var insidePublication = [];
 
-						// var inputAuthorsInside =
-						// 				[
-						// 					['dUpOnT', 'Mathis'],
-						// 					['DUPONT', 'carina']
-						// 				];
-						// var inputDateInside = '2008';
-						// var inputEditorMain = 'Gallia Suppl. 59';
-						// var inputPagesInside = '245-328';
-						// var inputLocationInside = 'Bordeaux';
-						// var inputTitleInside = 'Plaidoyer pour la ‘petite épigraphie’ : l’exemple de la cité de Béziers';
-						// var inputEdOrDirOrCollInside = 'coll.';
-
-					 insidePublication.push(inputAuthorsInside, inputEdOrDirOrCollInside, inputEditorInside, inputPagesInside, inputLocationInside, inputTitleInside, inputDateInside);
-					 // console.log(insidePublication);
+					 insidePublication.push(inputAuthorsInside, inputDateInside, inputDateFirstInside, inputEditorInside, inputPagesInside, inputLocationInside, inputTitleInside, inputEdOrDirOrCollInside);
 			 	}
-
-				// mainPublication = [
-				// 	[
-				// 		['feugère', 'Mathieu,Igor'],
-				// 		['Rodriguez', 'Andreas']
-				// 	],
-				// 	'2008',
-				// 	'Gallia Suppl. 59',
-				// 	'467-489',
-				// 	'Paris',
-				// 	'Plaidoyer pour la ‘petite épigraphie’ : l’exemple de la cité de Béziers',
-				// 	'dir.'
-				// ];
-				//
-				// insidePublication = [
-				// 	[
-				// 		['dUpOnT', 'Mathis'],
-				// 		['DUPONT', 'carina']
-				// 	],
-				// 	'2008',
-				// 	'Plaidoyer pour la ‘petite épigraphie’ : l’exemple de la cité de Béziers',
-				// 	'coll.'
-				// ];
 
 				if (isCheckedCheckboxInsidePublication)
 				{
@@ -369,17 +317,6 @@
 				{
 					convertToAusoniusBibliographicNorms(mainPublication, []);
 				}
-			}
-
-			function buildMainPublication()
-			{
-
-
-			}
-
-			function buildInsidePublication()
-			{
-
 			}
 
 			function hideInsidePublicationInputs()
