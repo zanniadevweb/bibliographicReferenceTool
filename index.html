@@ -59,10 +59,18 @@
 		<h2> Remplir les champs ci-dessous avant de cliquer sur "Générer Résultat" :</h2>
 		<span id="spanSaisir"><h3>Référence principale :</h3></span>
 
+				<span id="spanWithShortCitationSelectMain" style="display: none;">
+				Citation courte : 		<select id="inputShortCitationMain">
+																		<option value="0">Oui</option>
+																		<option value="1">Non</option>
+																	</select>
+				</span>
+				</br>
+
 				<div style="display: flex; align-items: center">
 					<label>Auteurs :</label>
 					<multi-input>
-						<input id="inputAuthorsMain" list="speakers" placeholder="Dupont S." title="Type in a name">
+						<input id="inputAuthorsMain" list="speakers" placeholder="Dupont, S." title="Type in a name">
 						<datalist id="speakers">
 							<!-- <option value="Banquo"></option>
 							<option value="Bishop Stokesly of London"></option> -->
@@ -71,18 +79,25 @@
 					<button id="getMain">Ajouter +1</button>
 				</div>
 
-				</br>
 				Éd. ou Dir. ou Coll. : 		<select id="inputEdOrDirOrCollMain">
 																		<option value="0">éd.</option>
 																		<option value="1">dir.</option>
 																		<option value="2">coll.</option>
+																		<option value="3">Auteur</option>
 																	</select>
 				</br>
-				Date de publication : <input type="text" id="inputDateMain" placeholder="2003" size="100" title="Type in a name">
+				Date de publication (Facultatif) : <input type="text" id="inputDateMain" placeholder="2003" size="100" title="Type in a name">
 				</br>
 				Date de première publication (Facultatif) : <input type="text" id="inputDateFirstMain" placeholder="2003" size="100" title="Type in a name">
 				</br>
-				Éditeur / Collection : <input type="text" id="inputEditorMain" placeholder="Gallia Suppl. 59" size="100" title="Type in a name">
+				Collection ou Revue : 		<select id="inputCollectionOrArticle">
+																		<option value="0">Collection</option>
+																		<option value="1">Revue</option>
+																	</select>
+
+				Collection / Revue : <input type="text" id="inputEditorMain" placeholder="Gallia Suppl." size="70" title="Type in a name">
+
+				N° Collection / Tomaison (Revue) : <input type="text" id="inputNumberEditorMain" placeholder="59" size="10" title="Type in a name">
 				</br>
 				Pages (Facultatif) : <input type="text" id="inputPagesMain" placeholder="467-489" size="100" title="Type in a name">
 				</br>
@@ -98,7 +113,7 @@
 				<div style="display: flex; align-items: center">
 					<label>Auteurs :</label>
 					<multi-input>
-						<input id="inputAuthorsInside" list="speakers" placeholder="Dupont S." title="Type in a name">
+						<input id="inputAuthorsInside" list="speakers" placeholder="Dupont, S." title="Type in a name">
 						<datalist id="speakers">
 							<!-- <option value="Banquo"></option>
 							<option value="Bishop Stokesly of London"></option> -->
@@ -107,22 +122,21 @@
 					<button id="getInside">Ajouter +1</button>
 				</div>
 
-					<p id="values"></p>
-					</br>
 					Éd. ou Dir. ou Coll. : 		<select id="inputEdOrDirOrCollInside">
 																			<option value="0">éd.</option>
 																			<option value="1">dir.</option>
 																			<option value="2">coll.</option>
+																			<option value="3">Auteur</option>
 																		</select>
 					</br>
-					Date de publication : <input type="text" id="inputDateInside" placeholder="2003" size="100" title="Type in a name">
+					Date de publication (Facultatif) : <input type="text" id="inputDateInside" placeholder="2003" size="100" title="Type in a name">
 					</br>
 					Date de première publication (Facultatif) : <input type="text" id="inputDateFirstInside" placeholder="2003" size="100" title="Type in a name">
 					</br>
-					Éditeur / Collection : <input type="text" id="inputEditorInside" placeholder="Gallia Suppl. 59" size="100" title="Type in a name">
-					</br>
+					<!-- Collection : <input type="text" id="inputEditorInside" placeholder="Gallia Suppl." size="100" title="Type in a name"> -->
+					<!-- </br> -->
 					<!-- Pages (Facultatif) : <input type="text" id="inputPagesInside" placeholder="467-489" size="100" title="Type in a name"> -->
-					</br>
+					<!-- </br> -->
 					Titre d'ouvrage : <input type="text" id="inputTitleInside" placeholder="Plaidoyer pour la ‘petite épigraphie’ : l’exemple de la cité de Béziers" size="100" title="Type in a name">
 					</br>
 					<!-- Lieu de publication : <input type="text" id="inputLocationInside" placeholder="Paris" size="100" title="Type in a name"> -->
@@ -133,47 +147,101 @@
 			var authors = [];
 			var mainPublication = [];
 			var insidePublication = [];
+			var facultativeDatePublication = '';
 			var facultativeDateOfFirstPublication = '';
 			var facultativePages = '';
 
-			function createSinglePublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection)
+			function createSinglePublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection, numberEditor)
 			{
+				var inputCollectionOrArticle = document.getElementById("inputCollectionOrArticle").value;
+				var isArticle = false;
+				var facultativeCommaIfArticle = '';
+				var italicEditorIfArticle = '';
+
+				if (inputCollectionOrArticle == 0) { // COLLECTION
+					isArticle = false;
+					facultativeCommaIfArticle = ' ';
+					italicEditorIfArticle = mainPublicationEditor;
+				} else if (inputCollectionOrArticle == 1) { // ARTICLE
+					isArticle = true;
+					facultativeCommaIfArticle = ', ';
+					italicEditorIfArticle = mainPublicationEditor.italics();
+				}
+
 				if (dateOfFirstPublication !== '') {
 					facultativeDateOfFirstPublication = ' [' +  dateOfFirstPublication + '] ';
 				} else {
 					facultativeDateOfFirstPublication = '';
+				}
+				if (dateOfPublication !== '') {
+					facultativeDatePublication = dateOfPublication;
+				} else {
+					facultativeDatePublication = 'à paraître';
 				}
 				if (pagesFromMainPublication !== '') {
 					facultativePages = ", " + pagesFromMainPublication;
 				} else {
 					facultativePages = '';
 				}
-				return spaceBetweenAuthors(authors) + " " +  editionOrDirectionOrCollection  + facultativeDateOfFirstPublication + " (" +  dateOfPublication + '): ' + titleOfWritingWork.italics() + ", " +   mainPublicationEditor.italics() + facultativePages +  ", " + editingPublicationLocation + '.';
+				return spaceBetweenAuthors(authors) + " " +  editionOrDirectionOrCollection  + facultativeDateOfFirstPublication + " (" +  facultativeDatePublication + '): ' + titleOfWritingWork.italics() + ", " +  italicEditorIfArticle + facultativeCommaIfArticle + numberEditor + facultativePages +  ", " + editingPublicationLocation + '.';
 			}
 
-			function createContainerPublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection)
+			function createContainerPublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection, numberEditor)
 			{
+				var inputShortCitationMain = document.getElementById("inputShortCitationMain").value;
+
 				if (dateOfFirstPublication !== '') {
 					facultativeDateOfFirstPublication = ' [' +  dateOfFirstPublication + '] ';
 				} else {
 					facultativeDateOfFirstPublication = '';
+				}
+				if (dateOfPublication !== '') {
+					facultativeDatePublication = dateOfPublication;
+				} else {
+					facultativeDatePublication = 'à paraître';
 				}
 				if (pagesFromMainPublication !== '') {
 					facultativePages = ", " + pagesFromMainPublication;
 				} else {
 					facultativePages = '';
 				}
-				return spaceBetweenAuthors(authors) + " " + editionOrDirectionOrCollection + facultativeDateOfFirstPublication + " " + dateOfPublication + ", " + mainPublicationEditor.italics() + facultativePages +  ", " + editingPublicationLocation + '.';
+
+				if (inputShortCitationMain == 0) // CITATION COURTE
+				{
+					return spaceBetweenAuthors(authors) + " " + editionOrDirectionOrCollection + facultativeDateOfFirstPublication + " " + facultativeDatePublication + facultativePages + '.';
+				} else if (inputShortCitationMain == 1) // CITATION LONGUE
+				{
+					var inputCollectionOrArticle = document.getElementById("inputCollectionOrArticle").value;
+					var isArticle = false;
+					var facultativeCommaIfArticle = '';
+					var italicEditorIfArticle = '';
+
+					if (inputCollectionOrArticle == 0) { // COLLECTION
+						isArticle = false;
+						facultativeCommaIfArticle = ' ';
+						italicEditorIfArticle = mainPublicationEditor;
+					} else if (inputCollectionOrArticle == 1) { // ARTICLE
+						isArticle = true;
+						facultativeCommaIfArticle = ', ';
+						italicEditorIfArticle = mainPublicationEditor.italics();
+					}
+					return spaceBetweenAuthors(authors) + " " + editionOrDirectionOrCollection + facultativeDateOfFirstPublication + " " + facultativeDatePublication + ", " + titleOfWritingWork.italics() + ", " +  italicEditorIfArticle + facultativeCommaIfArticle + numberEditor + facultativePages +  ", " + editingPublicationLocation + '.';
+				}
 			}
 
-			function createInsidePublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection)
+			function createInsidePublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection, numberEditor)
 			{
 				if (dateOfFirstPublication !== '') {
 					facultativeDateOfFirstPublication = ' [' +  dateOfFirstPublication + '] ';
 				} else {
 					facultativeDateOfFirstPublication = '';
 				}
-					return spaceBetweenAuthors(authors) + " " +  editionOrDirectionOrCollection + facultativeDateOfFirstPublication + " (" + dateOfPublication + "): " + "“" + titleOfWritingWork + "”" + "<b>" + " in: " + "</b>";
+				if (dateOfPublication !== '') {
+					facultativeDatePublication = dateOfPublication;
+				} else {
+					facultativeDatePublication = 'à paraître';
+				}
+					return spaceBetweenAuthors(authors) + " " +  editionOrDirectionOrCollection + facultativeDateOfFirstPublication + " (" + facultativeDatePublication + "): " + "“" + titleOfWritingWork + "”" + "<b>" + " in: " + "</b>";
 			}
 
 			function convertToAusoniusBibliographicNorms(mainPublication, insidePublication)
@@ -194,12 +262,12 @@
 
 				if (insidePublication.length !== 0)
 				{
-					bibliographicReferenceMainPublication = createContainerPublication(mainHasAuthors ? addAuthors(mainPublication[0]) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[5], mainPublication[6], mainPublication[7]);
+					bibliographicReferenceMainPublication = createContainerPublication(mainHasAuthors ? addAuthors(mainPublication[0]) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[5], mainPublication[6], mainPublication[7], mainPublication[8]);
 					bibliographicReferenceInsidePublication = createInsidePublication(insideHasAuthors ? addAuthors(insidePublication[0]) : '', insidePublication[1], insidePublication[2], insidePublication[3], insidePublication[4], insidePublication[5], insidePublication[6], insidePublication[7]);
 					document.getElementById('spanResult').innerHTML = bibliographicReferenceInsidePublication + bibliographicReferenceMainPublication;
 				} else
 				{
-					bibliographicReferenceMainPublication = createSinglePublication(mainHasAuthors ? addAuthors(mainPublication[0]) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[5], mainPublication[6], mainPublication[7]);
+					bibliographicReferenceMainPublication = createSinglePublication(mainHasAuthors ? addAuthors(mainPublication[0]) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[5], mainPublication[6], mainPublication[7], mainPublication[8]);
 					document.getElementById('spanResult').innerHTML = bibliographicReferenceInsidePublication + bibliographicReferenceMainPublication;
 				}
 
@@ -257,6 +325,7 @@
 					var inputDateMain = document.getElementById('inputDateMain').value;
 					var inputDateFirstMain = document.getElementById('inputDateFirstMain').value;
 					var inputEditorMain = document.getElementById('inputEditorMain').value;
+					var inputNumberEditorMain = document.getElementById('inputNumberEditorMain').value;
 					var inputPagesMain = document.getElementById('inputPagesMain').value;
 					var inputLocationMain = document.getElementById('inputLocationMain').value;
 					var inputTitleMain = document.getElementById('inputTitleMain').value;
@@ -270,11 +339,14 @@
 					} else if (inputEdOrDirOrCollMain == 2)
 					{
 						inputEdOrDirOrCollMain = 'coll.';
+					} else if (inputEdOrDirOrCollMain == 3)
+					{
+						inputEdOrDirOrCollMain = '';
 					}
 
 					var mainPublication = [];
 
-					mainPublication.push(inputAuthorsMain, inputDateMain, inputDateFirstMain, inputEditorMain, inputPagesMain, inputLocationMain, inputTitleMain, inputEdOrDirOrCollMain);
+					mainPublication.push(inputAuthorsMain, inputDateMain, inputDateFirstMain, inputEditorMain, inputPagesMain, inputLocationMain, inputTitleMain, inputEdOrDirOrCollMain, inputNumberEditorMain);
 
 					if (isCheckedCheckboxInsidePublication)
 					{
@@ -286,7 +358,8 @@
 
 						var inputDateInside = document.getElementById('inputDateInside').value;
 						var inputDateFirstInside = document.getElementById('inputDateFirstInside').value;
-						var inputEditorInside = document.getElementById('inputEditorInside').value;
+						// var inputEditorInside = document.getElementById('inputEditorInside').value;
+						var inputEditorInside = '';
 						// var inputPagesInside = document.getElementById('inputPagesInside').value;
 						var inputPagesInside = '';
 						// var inputLocationInside = document.getElementById('inputLocationInside').value;
@@ -302,6 +375,9 @@
 						} else if (inputEdOrDirOrCollInside == 2)
 						{
 							inputEdOrDirOrCollInside = 'coll.';
+						} else if (inputEdOrDirOrCollInside == 3)
+						{
+							inputEdOrDirOrCollInside = '';
 						}
 
 						var insidePublication = [];
@@ -324,12 +400,15 @@
 				var checkboxInsidePublication = document.getElementById('checkboxInsidePublication');
 				var isCheckedCheckboxInsidePublication = checkboxInsidePublication.checked;
 				var spanWithInsidePublicationInputs = document.getElementById("spanWithInsidePublicationInputs");
+				var spanWithShortCitationSelectMain = document.getElementById("spanWithShortCitationSelectMain");
 				if (isCheckedCheckboxInsidePublication)
 				{
 					disableAndHideInputs(spanWithInsidePublicationInputs, false);
+					disableAndHideInputs(spanWithShortCitationSelectMain, false);
 				} else
 				{
 					disableAndHideInputs(spanWithInsidePublicationInputs);
+					disableAndHideInputs(spanWithShortCitationSelectMain);
 				}
 			}
 
