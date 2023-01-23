@@ -79,7 +79,7 @@
 					<button id="getMain">Ajouter +1</button>
 				</div>
 
-				Éd. ou Dir. ou Coll. : 		<select id="inputEdOrDirOrCollMain">
+				Éd. ou Dir. ou Coll. ou Auteur :	<select id="inputEdOrDirOrCollMain">
 																		<option value="0">éd.</option>
 																		<option value="1">dir.</option>
 																		<option value="2">coll.</option>
@@ -122,7 +122,7 @@
 					<button id="getInside">Ajouter +1</button>
 				</div>
 
-					Éd. ou Dir. ou Coll. : 		<select id="inputEdOrDirOrCollInside">
+					Éd. ou Dir. ou Coll. ou Auteur : <select id="inputEdOrDirOrCollInside">
 																			<option value="0">éd.</option>
 																			<option value="1">dir.</option>
 																			<option value="2">coll.</option>
@@ -276,7 +276,15 @@
 
 			function addAuthors(arrayOfAuthors)
 			{
-				return arrayOfAuthors.join(', ');
+				var elementsExceptLastOneArray = arrayOfAuthors.slice(0, -1);
+				var facultativeLinkingWord = '';
+				if (arrayOfAuthors.length > 1) {
+					facultativeLinkingWord = ' et ';
+				} else {
+					facultativeLinkingWord = '';
+				}
+				var lastElementArray = arrayOfAuthors.slice(-1);
+				return elementsExceptLastOneArray.join(', ') + facultativeLinkingWord + lastElementArray;
 			}
 
 			// function convertAuthors(arrayOfAuthors)
