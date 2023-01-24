@@ -262,19 +262,19 @@
 
 				if (insidePublication.length !== 0)
 				{
-					bibliographicReferenceMainPublication = createContainerPublication(mainHasAuthors ? addAuthors(mainPublication[0]) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[5], mainPublication[6], mainPublication[7], mainPublication[8]);
-					bibliographicReferenceInsidePublication = createInsidePublication(insideHasAuthors ? addAuthors(insidePublication[0]) : '', insidePublication[1], insidePublication[2], insidePublication[3], insidePublication[4], insidePublication[5], insidePublication[6], insidePublication[7]);
+					bibliographicReferenceMainPublication = createContainerPublication(mainHasAuthors ? addAuthors(mainPublication[0], insidePublication) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[5], mainPublication[6], mainPublication[7], mainPublication[8]);
+					bibliographicReferenceInsidePublication = createInsidePublication(insideHasAuthors ? addAuthors(insidePublication[0], insidePublication.length) : '', insidePublication[1], insidePublication[2], insidePublication[3], insidePublication[4], insidePublication[5], insidePublication[6], insidePublication[7]);
 					document.getElementById('spanResult').innerHTML = bibliographicReferenceInsidePublication + bibliographicReferenceMainPublication;
 				} else
 				{
-					bibliographicReferenceMainPublication = createSinglePublication(mainHasAuthors ? addAuthors(mainPublication[0]) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[5], mainPublication[6], mainPublication[7], mainPublication[8]);
+					bibliographicReferenceMainPublication = createSinglePublication(mainHasAuthors ? addAuthors(mainPublication[0], insidePublication) : '', mainPublication[1], mainPublication[2], mainPublication[3], mainPublication[4], mainPublication[5], mainPublication[6], mainPublication[7], mainPublication[8]);
 					document.getElementById('spanResult').innerHTML = bibliographicReferenceInsidePublication + bibliographicReferenceMainPublication;
 				}
 
 				wholeBibliographicReference = bibliographicReferenceInsidePublication + bibliographicReferenceMainPublication;
 			}
 
-			function addAuthors(arrayOfAuthors)
+			function addAuthors(arrayOfAuthors, insidePublication)
 			{
 				var facultativeLinkingWord = '';
 				var inputShortCitationMain = document.getElementById("inputShortCitationMain").value;
@@ -282,7 +282,7 @@
 				var lastElementArray = arrayOfAuthors.slice(-1);
 
 				if (arrayOfAuthors.length > 1) {
-					if (inputShortCitationMain == 0) // CITATION COURTE
+					if (inputShortCitationMain == 0 && insidePublication.length !== 0) // CITATION COURTE
 					{
 						if (arrayOfAuthors.length == 2) {
 							facultativeLinkingWord = ' & ';
@@ -291,7 +291,7 @@
 							lastElementArray = '';
  							facultativeLinkingWord = (' et al. ').italics();
 						}
-					} else if (inputShortCitationMain == 1) // CITATION LONGUE
+					} else // CITATION LONGUE
 					{
 						facultativeLinkingWord = ' et ';
 					}
