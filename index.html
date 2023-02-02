@@ -54,6 +54,8 @@
 																								<option value="1">Article</option>
 																							</select>
 		</br>
+		<span><b>Il s'agit d'un document électronique ? Cocher si oui : </b><input id="checkboxIsElectronicDocument" type="checkbox" onchange="hideElectronicDocumentInputs()"></span>
+		</br>
 		<span id ="spanIsContributionCheckBox"><b>L'ouvrage doit en citer un autre ? Cocher si oui : </b><input id="checkboxInsidePublication" type="checkbox" onchange="hideInsidePublicationInputs()"></span>
 		</br></br>
 		<button onclick="buildReference()" id="buttonGenerateReference">GENERER RÉFERENCE</button>
@@ -105,7 +107,17 @@
 				</br>
 				Titre d'ouvrage : <input type="text" id="inputTitleMain" placeholder="Plaidoyer pour la ‘petite épigraphie’&nbsp;: l’exemple de la cité de Béziers" size="100" title="Type in a name">
 				</br>
-				Lieu de publication : <input type="text" id="inputLocationMain" placeholder="Paris" size="100" title="Type in a name">
+				<span id="spanWithEditingPublicationLocationInput" style="display: none;">
+					Lieu de publication : <input type="text" id="inputLocationMain" placeholder="Paris" size="100" title="Type in a name">
+				</span>
+				<span id="spanWithElectronicDocumentInputs" style="display: none;">
+					</br>
+					Date électronique de mise en ligne : <input type="text" id="inputDateElectronicUploadMain" placeholder="06/02/2003" size="100" title="Type in a name">
+					</br>
+					Date électronique de consultation : <input type="text" id="inputDateElectronicConsultMain" placeholder="30/12/2022" size="100" title="Type in a name">
+					</br>
+					DOI / URL : <input type="text" id="inputUrlMain" placeholder="https://www.google.com/" size="100" title="Type in a name">
+				</span>
 
 		</br></br>
 
@@ -152,20 +164,35 @@
 			var facultativeDatePublication = '';
 			var facultativeDateOfFirstPublication = '';
 			var facultativePages = '';
+			var electronicValues = '';
+
+			function getElectronicValues()
+			{
+				var inputDateElectronicUploadMain = document.getElementById('inputDateElectronicUploadMain').value;
+				var inputDateElectronicConsultMain = document.getElementById('inputDateElectronicConsultMain').value;
+				var inputUrlMain = document.getElementById('inputUrlMain').value;
+
+				return ' [En ligne], mis en ligne le ' + inputDateElectronicUploadMain + ', consulté le ' + inputDateElectronicConsultMain + '. DOI/URL&nbsp;: ' + inputUrlMain;
+			}
 
 			function createSinglePublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection, numberEditor)
 			{
+				var isCheckedCheckboxElectronicDocument =  document.getElementById('checkboxIsElectronicDocument').checked;
+				if (isCheckedCheckboxElectronicDocument) { electronicValues = getElectronicValues() } else { electronicValues = '' };
 				var facultativeCommaIfArticle = '';
 				var italicEditorIfArticle = '';
+				var editingPublicationLocationValue = '';
 				var inputBookOrArticle = document.getElementById('inputBookOrArticle').value;
 				if(inputBookOrArticle == 0) { titleOfWritingWork = titleOfWritingWork.italics() + ', ' } else { titleOfWritingWork = "“" + titleOfWritingWork + "”, " }
 
 				if (inputBookOrArticle == 0) { // LIVRE
+					editingPublicationLocationValue = ', ' + editingPublicationLocation;
 					if (numberEditor !== '') {
 						facultativeCommaIfArticle = ' ';
 					}
 					italicEditorIfArticle = mainPublicationEditor;
 				} else if (inputBookOrArticle == 1) { // ARTICLE
+					editingPublicationLocationValue = '';
 					if (numberEditor !== '') {
 						facultativeCommaIfArticle = ', ';
 					}
@@ -176,11 +203,13 @@
 				facultativeDatePublication = formattedDatePublication(dateOfPublication);
 				facultativePages = formattedPages(pagesFromMainPublication);
 
-				return spaceBetweenAuthors(authors) + " " +  editionOrDirectionOrCollection  + facultativeDateOfFirstPublication + " (" +  facultativeDatePublication + ')&nbsp;: ' + titleOfWritingWork +  italicEditorIfArticle + facultativeCommaIfArticle + numberEditor + facultativePages +  ", " + editingPublicationLocation + '.';
+				return spaceBetweenAuthors(authors) + " " +  editionOrDirectionOrCollection  + facultativeDateOfFirstPublication + " (" +  facultativeDatePublication + ')&nbsp;: ' + titleOfWritingWork +  italicEditorIfArticle + facultativeCommaIfArticle + numberEditor + facultativePages + editingPublicationLocationValue + electronicValues + '.';
 			}
 
 			function createContainerPublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection, numberEditor)
 			{
+				var isCheckedCheckboxElectronicDocument =  document.getElementById('checkboxIsElectronicDocument').checked;
+				if (isCheckedCheckboxElectronicDocument) { electronicValues = getElectronicValues() } else { electronicValues = '' };
 				var inputShortCitationMain = document.getElementById("inputShortCitationMain").value;
 
 				if (inputShortCitationMain == 0) // CITATION COURTE
@@ -189,7 +218,7 @@
 					facultativeDatePublication = formattedDatePublication(dateOfPublication);
 					facultativePages = formattedPages(pagesFromMainPublication);
 
-					return spaceBetweenAuthors(authors) + " " + editionOrDirectionOrCollection + facultativeDateOfFirstPublication + " " + facultativeDatePublication + facultativePages + '.';
+					return spaceBetweenAuthors(authors) + " " + editionOrDirectionOrCollection + facultativeDateOfFirstPublication + " " + facultativeDatePublication + facultativePages + electronicValues + '.';
 				} else if (inputShortCitationMain == 1) // CITATION LONGUE
 				{
 					return createSinglePublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection, numberEditor);
@@ -417,6 +446,20 @@
 				}
 			}
 
+			function hideElectronicDocumentInputs()
+			{
+				var checkboxElectronicDocument = document.getElementById('checkboxIsElectronicDocument');
+				var isCheckedCheckboxElectronicDocument = checkboxElectronicDocument.checked;
+
+				if (isCheckedCheckboxElectronicDocument)
+				{
+					disableAndHideInputs(spanWithElectronicDocumentInputs, false);
+				} else
+				{
+					disableAndHideInputs(spanWithElectronicDocumentInputs);
+				}
+			}
+
 			function hideInsidePublicationInputs()
 			{
 				var checkboxInsidePublication = document.getElementById('checkboxInsidePublication');
@@ -443,11 +486,11 @@
 				if (inputBookOrArticle == 0)
 				{
 					disableAndHideInputs(spanIsContributionCheckBox, false);
-					disableAndHideInputs(spanIsContributionCheckBox, false);
+					disableAndHideInputs(spanWithEditingPublicationLocationInput, false);
 				} else
 				{
 					disableAndHideInputs(spanIsContributionCheckBox);
-					disableAndHideInputs(spanIsContributionCheckBox);
+					disableAndHideInputs(spanWithEditingPublicationLocationInput);
 				}
 			}
 
