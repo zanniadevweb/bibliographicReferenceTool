@@ -94,12 +94,12 @@
 																		<option value="3">Auteur</option>
 																	</select>
 				</br>
+				Date de première publication (Facultatif) : <input type="text" id="inputDateFirstMain" placeholder="1995" size="100" title="Type in a name">
+				</br>
 				Date de publication (Facultatif) : <input type="text" id="inputDateMain" placeholder="2003" size="100" title="Type in a name">
 				</br>
-				Date de première publication (Facultatif) : <input type="text" id="inputDateFirstMain" placeholder="2003" size="100" title="Type in a name">
-				</br>
 
-				Collection / Revue : <input type="text" id="inputEditorMain" placeholder="Gallia Suppl." size="70" title="Type in a name">
+				Collection / Revue (Facultatif) : <input type="text" id="inputEditorMain" placeholder="Gallia Suppl." size="70" title="Type in a name">
 
 				N° Collection / Tomaison (Facultatif) : <input type="text" id="inputNumberEditorMain" placeholder="59" size="10" title="Type in a name">
 				</br>
@@ -107,8 +107,11 @@
 				</br>
 				Titre d'ouvrage : <input type="text" id="inputTitleMain" placeholder="Plaidoyer pour la ‘petite épigraphie’&nbsp;: l’exemple de la cité de Béziers" size="100" title="Type in a name">
 				</br>
-				<span id="spanWithEditingPublicationLocationInput" style="display: none;">
-					Lieu de publication : <input type="text" id="inputLocationMain" placeholder="Paris" size="100" title="Type in a name">
+				<span id="spanWithBookInputs">
+					Lieu de publication : <input type="text" id="inputLocationMain" placeholder="Paris" size="100" title="Type in a name"></br>
+					N° Romain de Volume (Facultatif) : <input type="text" id="inputRomanNumberMain" placeholder="v" size="100" title="Type in a name"></br>
+				  Genre (Facultatif) : <input type="text" id="inputGenreMain" placeholder="" size="100" title="Type in a name"></br>
+					Établissement / Université (Facultatif) : <input type="text" id="inputUniversityMain" placeholder="Université Bordeaux Montaigne" size="100" title="Type in a name">
 				</span>
 				<span id="spanWithElectronicDocumentInputs" style="display: none;">
 					</br>
@@ -183,9 +186,44 @@
 				var italicEditorIfArticle = '';
 				var editingPublicationLocationValue = '';
 				var inputBookOrArticle = document.getElementById('inputBookOrArticle').value;
-				if(inputBookOrArticle == 0) { titleOfWritingWork = titleOfWritingWork.italics() + ', ' } else { titleOfWritingWork = "“" + titleOfWritingWork + "”, " }
+				var inputFacultativeInputsBookValues = '';
+
+				var inputRomanNumberMain = '';
+				var inputGenreMain = '';
+				var inputUniversityMain = '';
+
+				var facultativeCommaIfMainPublicationEditor = '';
+				if (mainPublicationEditor !== '') {
+					facultativeCommaIfMainPublicationEditor = ', ';
+				}
+				if(inputBookOrArticle == 0) { titleOfWritingWork = titleOfWritingWork.italics() + facultativeCommaIfMainPublicationEditor } else { titleOfWritingWork = "“" + titleOfWritingWork + "”" + facultativeCommaIfMainPublicationEditor }
 
 				if (inputBookOrArticle == 0) { // LIVRE
+					var inputRomanNumberMain = document.getElementById('inputRomanNumberMain').value;
+					var inputGenreMain = document.getElementById('inputGenreMain').value;
+					var inputUniversityMain = document.getElementById('inputUniversityMain').value;
+
+					inputFacultativeInputsBookArray = [];
+					if (inputRomanNumberMain !== '') {
+						inputFacultativeInputsBookArray.push(inputRomanNumberMain);
+					}
+					if (inputGenreMain !== '') {
+						inputFacultativeInputsBookArray.push(inputGenreMain);
+					}
+					if (inputUniversityMain !== '') {
+						inputFacultativeInputsBookArray.push(inputUniversityMain);
+					}
+					if (inputUniversityMain !== '' || inputGenreMain !== '' || inputRomanNumberMain !== '') {
+						if (mainPublicationEditor !== '') {
+							inputFacultativeInputsBookValues = inputFacultativeInputsBookArray.join(', ') + ', ';
+						} else {
+							inputFacultativeInputsBookValues = ', ' + inputFacultativeInputsBookArray.join(', ');
+						}
+					}
+					else {
+						inputFacultativeInputsBookValues = ''
+					}
+
 					editingPublicationLocationValue = ', ' + editingPublicationLocation;
 					if (numberEditor !== '') {
 						facultativeCommaIfArticle = ' ';
@@ -203,7 +241,7 @@
 				facultativeDatePublication = formattedDatePublication(dateOfPublication);
 				facultativePages = formattedPages(pagesFromMainPublication);
 
-				return spaceBetweenAuthors(authors) + " " +  editionOrDirectionOrCollection  + facultativeDateOfFirstPublication + " (" +  facultativeDatePublication + ')&nbsp;: ' + titleOfWritingWork +  italicEditorIfArticle + facultativeCommaIfArticle + numberEditor + facultativePages + editingPublicationLocationValue + electronicValues + '.';
+				return spaceBetweenAuthors(authors) + " " +  editionOrDirectionOrCollection  + facultativeDateOfFirstPublication + " (" +  facultativeDatePublication + ')&nbsp;: ' + titleOfWritingWork + inputFacultativeInputsBookValues + italicEditorIfArticle + facultativeCommaIfArticle + numberEditor + facultativePages + editingPublicationLocationValue + electronicValues + '.';
 			}
 
 			function createContainerPublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection, numberEditor)
@@ -486,11 +524,11 @@
 				if (inputBookOrArticle == 0)
 				{
 					disableAndHideInputs(spanIsContributionCheckBox, false);
-					disableAndHideInputs(spanWithEditingPublicationLocationInput, false);
+					disableAndHideInputs(spanWithBookInputs, false);
 				} else
 				{
 					disableAndHideInputs(spanIsContributionCheckBox);
-					disableAndHideInputs(spanWithEditingPublicationLocationInput);
+					disableAndHideInputs(spanWithBookInputs);
 				}
 			}
 
