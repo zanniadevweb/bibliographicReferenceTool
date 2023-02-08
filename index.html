@@ -108,14 +108,14 @@
 					  Genre (Facultatif) : <input type="text" id="inputGenreMain" placeholder="" size="100" title="Type in a name"></br>
 						Établissement / Université (Facultatif) : <input type="text" id="inputUniversityMain" placeholder="Université Bordeaux Montaigne" size="100" title="Type in a name">
 					</span>
-					<span id="spanWithElectronicDocumentInputs" style="display: none;">
-						</br>
-						Date électronique de mise en ligne : <input type="text" id="inputDateElectronicUploadMain" placeholder="06 février 2003" size="100" title="Type in a name">
-						</br>
-						Date électronique de consultation : <input type="text" id="inputDateElectronicConsultMain" placeholder="30 décembre 2022" size="100" title="Type in a name">
-						</br>
-						DOI / URL : <input type="text" id="inputUrlMain" placeholder="https://www.google.com/" size="100" title="Type in a name">
-					</span>
+				</span>
+				<span id="spanWithElectronicDocumentInputs" style="display: none;">
+					</br>
+					Date électronique de mise en ligne : <input type="text" id="inputDateElectronicUploadMain" placeholder="06 février 2003" size="100" title="Type in a name">
+					</br>
+					Date électronique de consultation : <input type="text" id="inputDateElectronicConsultMain" placeholder="30 décembre 2022" size="100" title="Type in a name">
+					</br>
+					DOI / URL : <input type="text" id="inputUrlMain" placeholder="https://www.google.com/" size="100" title="Type in a name">
 				</span>
 
 		</br></br>
@@ -500,6 +500,7 @@
 			{
 				var checkboxElectronicDocument = document.getElementById('checkboxIsElectronicDocument');
 				var isCheckedCheckboxElectronicDocument = checkboxElectronicDocument.checked;
+				var spanWithElectronicDocumentInputs = document.getElementById("spanWithElectronicDocumentInputs");
 
 				if (isCheckedCheckboxElectronicDocument)
 				{
