@@ -110,12 +110,15 @@
 					</span>
 				</span>
 				<span id="spanWithElectronicDocumentInputs" style="display: none;">
-					</br>
 					Date électronique de mise en ligne : <input type="text" id="inputDateElectronicUploadMain" placeholder="06 février 2003" size="100" title="Type in a name">
 					</br>
 					Date électronique de consultation : <input type="text" id="inputDateElectronicConsultMain" placeholder="30 décembre 2022" size="100" title="Type in a name">
 					</br>
-					DOI / URL : <input type="text" id="inputUrlMain" placeholder="https://www.google.com/" size="100" title="Type in a name">
+					Type ressource électronique : <select id="inputDoiOrUrlMain" onchange="changeTextInputUrlMain()">
+																					<option value="0">DOI</option>
+																					<option value="1">URL</option>
+																				</select>
+					: <input type="text" id="inputUrlMain" placeholder="10.1016/S8756-3282(01)00704-9" size="100" title="Type in a name">
 				</span>
 
 		</br></br>
@@ -161,8 +164,18 @@
 				var inputDateElectronicUploadMain = document.getElementById('inputDateElectronicUploadMain').value;
 				var inputDateElectronicConsultMain = document.getElementById('inputDateElectronicConsultMain').value;
 				var inputUrlMain = document.getElementById('inputUrlMain').value;
+				var inputDoiOrUrlMain = document.getElementById('inputDoiOrUrlMain').value;
 
-				return ' [En ligne], mis en ligne le ' + inputDateElectronicUploadMain + ', consulté le ' + inputDateElectronicConsultMain + '. DOI/URL&nbsp;: ' + inputUrlMain;
+				var doiOrUrlText = '';
+				if (inputDoiOrUrlMain == 0) // DOI
+				{
+					doiOrUrlText = 'DOI';
+				} else if (inputDoiOrUrlMain == 1) // URL
+				{
+					doiOrUrlText = 'URL';
+				}
+
+				return ' [En ligne], mis en ligne le ' + inputDateElectronicUploadMain + ', consulté le ' + inputDateElectronicConsultMain + '. ' + doiOrUrlText + '&nbsp;: ' + inputUrlMain;
 			}
 
 			function createSinglePublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection, numberEditor)
@@ -559,6 +572,19 @@
 				} else
 				{
 					disableAndHideInputs(spanWithShortCitationUselessItems, false);
+				}
+			}
+
+			function changeTextInputUrlMain()
+			{
+				var inputDoiOrUrlMain = document.getElementById('inputDoiOrUrlMain').value;
+				var inputUrlMain = document.getElementById('inputUrlMain');
+				if (inputDoiOrUrlMain == 0) // DOI
+				{
+					inputUrlMain.placeholder = '10.1016/S8756-3282(01)00704-9';
+				} else if (inputDoiOrUrlMain == 1) // URL
+				{
+					inputUrlMain.placeholder = 'https://www.google.com/';
 				}
 			}
 
