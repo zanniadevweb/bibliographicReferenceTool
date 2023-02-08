@@ -58,10 +58,10 @@
 		</br>
 		<span id ="spanIsContributionCheckBox"><b>L'ouvrage doit en citer un autre ? Cocher si oui : </b><input id="checkboxInsidePublication" type="checkbox" onchange="hideInsidePublicationInputs()"></span>
 		<span id="spanWithShortCitationSelectMain" style="display: none;">
-		<b>Référence principale avec citation courte :</b> 		<select id="inputShortCitationMain" onchange="hideShortCitationUselessItems()">
-																														<option value="0">Oui</option>
-																														<option value="1">Non</option>
-																													</select>
+			<b>Référence principale avec citation courte :</b> 		<select id="inputShortCitationMain" onchange="hideShortCitationUselessItemsIfBook()">
+																															<option value="0">Oui</option>
+																															<option value="1">Non</option>
+																														</select>
 		</span>
 		</br></br>
 		<button onclick="buildReference()" id="buttonGenerateReference">GENERER RÉFERENCE</button>
@@ -512,12 +512,13 @@
 
 			function hideInsidePublicationInputs()
 			{
+				var inputBookOrArticle = document.getElementById('inputBookOrArticle').value;
 				var checkboxInsidePublication = document.getElementById('checkboxInsidePublication');
 				var isCheckedCheckboxInsidePublication = checkboxInsidePublication.checked;
 				var spanWithInsidePublicationInputs = document.getElementById("spanWithInsidePublicationInputs");
 				var spanWithShortCitationSelectMain = document.getElementById("spanWithShortCitationSelectMain");
 
-				if (isCheckedCheckboxInsidePublication)
+				if (isCheckedCheckboxInsidePublication && inputBookOrArticle == 0) // LIVRE
 				{
 					disableAndHideInputs(spanWithInsidePublicationInputs, false);
 					disableAndHideInputs(spanWithShortCitationSelectMain, false);
@@ -530,10 +531,11 @@
 
 			function hideIsContributionCheckBox()
 			{
+				hideInsidePublicationInputs()
 				var inputBookOrArticle = document.getElementById('inputBookOrArticle').value;
 				var spanIsContributionCheckBox = document.getElementById("spanIsContributionCheckBox");
 
-				if (inputBookOrArticle == 0)
+				if (inputBookOrArticle == 0) // LIVRE
 				{
 					disableAndHideInputs(spanIsContributionCheckBox, false);
 					disableAndHideInputs(spanWithBookInputs, false);
@@ -544,17 +546,18 @@
 				}
 			}
 
-			function hideShortCitationUselessItems()
+			function hideShortCitationUselessItemsIfBook()
 			{
+				var inputBookOrArticle = document.getElementById('inputBookOrArticle').value;
 				var inputShortCitationMain = document.getElementById('inputShortCitationMain').value;
 				var spanWithShortCitationUselessItems = document.getElementById("spanWithShortCitationUselessItems");
 
-				if (inputShortCitationMain == 1)
-				{
-					disableAndHideInputs(spanWithShortCitationUselessItems, false);
-				} else
+				if (inputShortCitationMain == 0 && inputBookOrArticle == 0) // Citation Courte + LIVRE
 				{
 					disableAndHideInputs(spanWithShortCitationUselessItems);
+				} else
+				{
+					disableAndHideInputs(spanWithShortCitationUselessItems, false);
 				}
 			}
 
