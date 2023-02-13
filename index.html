@@ -76,9 +76,9 @@
 				<div style="display: flex; align-items: center">
 					<label>Auteurs (Facultatif) :</label>
 					<multi-input>
-						<input id="inputAuthorsMain" list="speakers" placeholder="Dupont, S., M., Dupond" title="Type in a name"><datalist id="speakers"></datalist>
+						<input id="inputAuthorsMain" list="speakers" placeholder="Dupont, S., M." title="Type in a name"><datalist id="speakers"></datalist>
 					</multi-input>
-					<button id="getMain">Ajouter +1</button>
+					<button id="getMain">Ajouter +1 Auteur</button>
 				</div>
 
 				Éd. ou Dir. ou Coll. ou Auteur :	<select id="inputEdOrDirOrCollMain">
@@ -102,8 +102,8 @@
 					</br>
 					Titre d'ouvrage (Pour obtenir <sup>e</sup> : saisir '&#60;sup >e&#60;/sup>') : <input type="text" id="inputTitleMain" placeholder="Plaidoyer pour la ‘petite épigraphie’&nbsp;: l’exemple de la cité de Béziers" size="100" title="Type in a name">
 					</br>
+					Lieu de publication (Facultatif) : <input type="text" id="inputLocationMain" placeholder="Paris" size="100" title="Type in a name"></br>
 					<span id="spanWithBookInputs">
-						Lieu de publication (Facultatif) : <input type="text" id="inputLocationMain" placeholder="Paris" size="100" title="Type in a name"></br>
 						N° Romain de Volume (Facultatif) : <input type="text" id="inputRomanNumberMain" placeholder="v" size="100" title="Type in a name"></br>
 					  Genre (Facultatif) : <input type="text" id="inputGenreMain" placeholder="" size="100" title="Type in a name"></br>
 						Établissement / Université (Facultatif) : <input type="text" id="inputUniversityMain" placeholder="Université Bordeaux Montaigne" size="100" title="Type in a name">
@@ -129,9 +129,9 @@
 				<div style="display: flex; align-items: center">
 					<label>Auteurs (Facultatif) :</label>
 					<multi-input>
-						<input id="inputAuthorsInside" list="speakers" placeholder="Dupont, S., M., Dupond" title="Type in a name"><datalist id="speakers"></datalist>
+						<input id="inputAuthorsInside" list="speakers" placeholder="Dupont, S., M." title="Type in a name"><datalist id="speakers"></datalist>
 					</multi-input>
-					<button id="getInside">Ajouter +1</button>
+					<button id="getInside">Ajouter +1 Auteur</button>
 				</div>
 
 					Éd. ou Dir. ou Coll. ou Auteur : <select id="inputEdOrDirOrCollInside">
@@ -185,6 +185,7 @@
 				var facultativeCommaIfArticle = '';
 				var italicEditorIfArticle = '';
 				var editingPublicationLocationValue = '';
+				editingPublicationLocationValue = ', ' + editingPublicationLocation;
 				var inputBookOrArticle = document.getElementById('inputBookOrArticle').value;
 				var inputFacultativeInputsBookValues = '';
 
@@ -203,7 +204,7 @@
 
 					var inputFacultativeInputsBookArray = [];
 					if (inputRomanNumberMain !== '') {
-						inputFacultativeInputsBookArray.push(inputRomanNumberMain);
+						inputRomanNumberMain = '. ' + inputRomanNumberMain.italics();
 					}
 					if (inputGenreMain !== '') {
 						inputFacultativeInputsBookArray.push(inputGenreMain);
@@ -211,15 +212,13 @@
 					if (inputUniversityMain !== '') {
 						inputFacultativeInputsBookArray.push(inputUniversityMain);
 					}
-					inputFacultativeInputsBookValues = addCommaBetweenExceptLastOne(inputFacultativeInputsBookArray);
+					inputFacultativeInputsBookValues = inputRomanNumberMain + addCommaBetweenExceptLastOne(inputFacultativeInputsBookArray);
 
-					editingPublicationLocationValue = ', ' + editingPublicationLocation;
 					if (numberEditor !== '') {
 						facultativeCommaIfArticle = ' ';
 					}
 					italicEditorIfArticle = mainPublicationEditor;
 				} else if (inputBookOrArticle == 1) { // ARTICLE
-					editingPublicationLocationValue = '';
 					if (numberEditor !== '') {
 						facultativeCommaIfArticle = ', ';
 					}
@@ -232,7 +231,7 @@
 				facultativeDatePublication = defaultValueIfEmptyValue(dateOfPublication, 'à paraître');
 
 				facultativePages = defaultValueIfEmptyValue(pagesFromMainPublication, '');
-				facultativeEditingPublicationLocation = defaultValueIfEmptyValue(editingPublicationLocation, 's.l.');
+				facultativeEditingPublicationLocation = defaultValueIfEmptyValue(editingPublicationLocation, '');
 				facultativeTitleOfWritingWork = defaultValueIfEmptyValue(titleOfWritingWork, 's.n.');
 
 				var groupe_two_comma_separated_Values = '';
@@ -258,14 +257,11 @@
 
 				var groupe_three_comma_separated_Values = '';
 				var groupe_three_comma_separated_Values_Array = [];
-				if (facultativePages !== '') {
-					groupe_three_comma_separated_Values_Array.push(facultativePages);
-				}
 				if (facultativeEditingPublicationLocation !== '') {
 					groupe_three_comma_separated_Values_Array.push(facultativeEditingPublicationLocation);
 				}
-				if (electronicValues !== '') {
-					groupe_three_comma_separated_Values_Array.push(electronicValues);
+				if (facultativePages !== '') {
+					groupe_three_comma_separated_Values_Array.push(facultativePages);
 				}
 				groupe_three_comma_separated_Values = addCommaBetweenExceptLastOne(groupe_three_comma_separated_Values_Array);
 
@@ -274,7 +270,7 @@
 					facultativeCommaIfGroupeThree = ', '
 				}
 
-				return spaceBetweenAuthors(facultativeAuthors) + ", " +  editionOrDirectionOrCollection  + facultativeDateOfFirstPublication + " (" +  facultativeDatePublication + ')&nbsp;: ' + groupe_two_comma_separated_Values + facultativeCommaIfGroupeTwo + italicEditorIfArticle + facultativeCommaIfArticle + numberEditor + facultativeCommaIfGroupeThree + groupe_three_comma_separated_Values + '.';
+				return spaceBetweenAuthors(facultativeAuthors) + " " +  editionOrDirectionOrCollection  + facultativeDateOfFirstPublication + " (" +  facultativeDatePublication + ')&nbsp;: ' + groupe_two_comma_separated_Values + facultativeCommaIfGroupeTwo + italicEditorIfArticle + facultativeCommaIfArticle + numberEditor + facultativeCommaIfGroupeThree + groupe_three_comma_separated_Values + electronicValues + '.';
 			}
 
 			function createContainerPublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection, numberEditor)
@@ -287,11 +283,8 @@
 				{
 					facultativeDateOfFirstPublication = formattedDateOfFirstPublication(dateOfFirstPublication);
 					facultativeDatePublication = defaultValueIfEmptyValue(dateOfPublication, 'à paraître');
-					// facultativeDatePublication = formattedDatePublication(dateOfPublication);
-					// facultativePages = formattedPages(pagesFromMainPublication);
 					facultativePages = defaultValueIfEmptyValue(pagesFromMainPublication, '');
 					facultativeAuthors = defaultValueIfEmptyValue(authors, 's.n.');
-					// facultativeAuthors = formattedAuthors(authors);
 
 					var groupe_four_comma_separated_Values = '';
 					var groupe_four_comma_separated_Values_Array = [];
@@ -303,7 +296,7 @@
 					}
 					groupe_four_comma_separated_Values = addCommaBetweenExceptLastOne(groupe_four_comma_separated_Values_Array);
 
-					return spaceBetweenAuthors(facultativeAuthors) + ", " + editionOrDirectionOrCollection + facultativeDateOfFirstPublication + " " + groupe_four_comma_separated_Values + electronicValues + '.';
+					return spaceBetweenAuthors(facultativeAuthors) + " " + editionOrDirectionOrCollection + facultativeDateOfFirstPublication + " " + groupe_four_comma_separated_Values + electronicValues + '.';
 				} else if (inputShortCitationMain == 1) // CITATION LONGUE
 				{
 					return createSinglePublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection, numberEditor);
@@ -318,7 +311,7 @@
 				facultativeAuthors = defaultValueIfEmptyValue(authors, 's.n.');
 				facultativeTitleOfWritingWork = defaultValueIfEmptyValue(titleOfWritingWork, 's.n.');
 
-				return spaceBetweenAuthors(facultativeAuthors) + ", " +  editionOrDirectionOrCollection + facultativeDateOfFirstPublication + " (" + facultativeDatePublication + ")&nbsp;: " + "“" + facultativeTitleOfWritingWork + "”" + " in&nbsp;: ";
+				return spaceBetweenAuthors(facultativeAuthors) + " " +  editionOrDirectionOrCollection + facultativeDateOfFirstPublication + " (" + facultativeDatePublication + ")&nbsp;: " + "“" + facultativeTitleOfWritingWork + "”" + " in&nbsp;: ";
 			}
 
 			function formattedDateOfFirstPublication(dateOfFirstPublication)
