@@ -105,7 +105,7 @@
 					Lieu de publication (Facultatif) : <input type="text" id="inputLocationMain" placeholder="Paris" size="100" title="Type in a name"></br>
 					<span id="spanWithBookInputs">
 						N° Romain de Volume (Facultatif) : <input type="text" id="inputRomanNumberMain" placeholder="v" size="100" title="Type in a name"></br>
-					  Genre (Facultatif) : <input type="text" id="inputGenreMain" placeholder="" size="100" title="Type in a name"></br>
+					  Genre (Facultatif) : <input type="text" id="inputGenreMain" placeholder="rapport de fouille, thèse de doctorat..." size="100" title="Type in a name"></br>
 						Établissement / Université (Facultatif) : <input type="text" id="inputUniversityMain" placeholder="Université Bordeaux Montaigne" size="100" title="Type in a name">
 					</span>
 				</span>
@@ -197,6 +197,27 @@
 					if(inputBookOrArticle == 0) { titleOfWritingWork = titleOfWritingWork.italics() } else { titleOfWritingWork = "“" + titleOfWritingWork + "”" }
 				}
 
+				facultativeAuthors = defaultValueIfEmptyValue(authors, 's.n.');
+
+				facultativeDateOfFirstPublication = formattedDateOfFirstPublication(dateOfFirstPublication);
+				facultativeDatePublication = defaultValueIfEmptyValue(dateOfPublication, 'à paraître');
+
+				facultativePages = defaultValueIfEmptyValue(pagesFromMainPublication, '');
+				facultativeEditingPublicationLocation = defaultValueIfEmptyValue(editingPublicationLocation, '');
+				facultativeTitleOfWritingWork = defaultValueIfEmptyValue(titleOfWritingWork, 's.n.');
+
+				var groupe_two_comma_separated_Values = '';
+				var groupe_two_comma_separated_Values_Array = [];
+				if (facultativeTitleOfWritingWork !== '') {
+					groupe_two_comma_separated_Values_Array.push(facultativeTitleOfWritingWork);
+				}
+				var facultativeCommaIfRomanNumber = ', ';
+				console.log(groupe_two_comma_separated_Values_Array);
+				if (inputRomanNumberMain !== '' || groupe_two_comma_separated_Values_Array.length < 2) {
+					facultativeCommaIfRomanNumber = '';
+				}
+				groupe_two_comma_separated_Values = addCommaBetweenExceptLastOne(groupe_two_comma_separated_Values_Array);
+
 				if (inputBookOrArticle == 0) { // LIVRE
 					var inputRomanNumberMain = document.getElementById('inputRomanNumberMain').value;
 					var inputGenreMain = document.getElementById('inputGenreMain').value;
@@ -204,7 +225,11 @@
 
 					var inputFacultativeInputsBookArray = [];
 					if (inputRomanNumberMain !== '') {
-						inputRomanNumberMain = '. ' + inputRomanNumberMain.italics();
+						if (groupe_two_comma_separated_Values_Array.length > 2 || inputGenreMain !== '' || inputUniversityMain !== '') {
+							inputRomanNumberMain = '. ' + inputRomanNumberMain.italics() + ', ';
+						} else {
+							inputRomanNumberMain = '. ' + inputRomanNumberMain.italics();
+						}
 					}
 					if (inputGenreMain !== '') {
 						inputFacultativeInputsBookArray.push(inputGenreMain);
@@ -224,25 +249,6 @@
 					}
 					italicEditorIfArticle = mainPublicationEditor.italics();
 				}
-
-				facultativeAuthors = defaultValueIfEmptyValue(authors, 's.n.');
-
-				facultativeDateOfFirstPublication = formattedDateOfFirstPublication(dateOfFirstPublication);
-				facultativeDatePublication = defaultValueIfEmptyValue(dateOfPublication, 'à paraître');
-
-				facultativePages = defaultValueIfEmptyValue(pagesFromMainPublication, '');
-				facultativeEditingPublicationLocation = defaultValueIfEmptyValue(editingPublicationLocation, '');
-				facultativeTitleOfWritingWork = defaultValueIfEmptyValue(titleOfWritingWork, 's.n.');
-
-				var groupe_two_comma_separated_Values = '';
-				var groupe_two_comma_separated_Values_Array = [];
-				if (facultativeTitleOfWritingWork !== '') {
-					groupe_two_comma_separated_Values_Array.push(facultativeTitleOfWritingWork);
-				}
-				if (inputFacultativeInputsBookValues !== '') {
-					groupe_two_comma_separated_Values_Array.push(inputFacultativeInputsBookValues);
-				}
-				groupe_two_comma_separated_Values = addCommaBetweenExceptLastOne(groupe_two_comma_separated_Values_Array);
 
 				var facultativeCommaIfGroupeTwo = '';
 				if (inputBookOrArticle == 0) {
@@ -270,7 +276,7 @@
 					facultativeCommaIfGroupeThree = ', '
 				}
 
-				return spaceBetweenAuthors(facultativeAuthors) + " " +  editionOrDirectionOrCollection  + facultativeDateOfFirstPublication + " (" +  facultativeDatePublication + ')&nbsp;: ' + groupe_two_comma_separated_Values + facultativeCommaIfGroupeTwo + italicEditorIfArticle + facultativeCommaIfArticle + numberEditor + facultativeCommaIfGroupeThree + groupe_three_comma_separated_Values + electronicValues + '.';
+				return spaceBetweenAuthors(facultativeAuthors) + " " +  editionOrDirectionOrCollection  + facultativeDateOfFirstPublication + " (" +  facultativeDatePublication + ')&nbsp;: ' + groupe_two_comma_separated_Values + facultativeCommaIfRomanNumber + inputFacultativeInputsBookValues + facultativeCommaIfGroupeTwo + italicEditorIfArticle + facultativeCommaIfArticle + numberEditor + facultativeCommaIfGroupeThree + groupe_three_comma_separated_Values + electronicValues + '.';
 			}
 
 			function createContainerPublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection, numberEditor)
