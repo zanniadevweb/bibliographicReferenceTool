@@ -212,16 +212,17 @@
 					groupe_two_comma_separated_Values_Array.push(facultativeTitleOfWritingWork);
 				}
 				var facultativeCommaIfRomanNumber = '';
-				var inputRomanNumberMain = document.getElementById('inputRomanNumberMain').value;
-				var inputGenreMain = document.getElementById('inputGenreMain').value;
-				var inputUniversityMain = document.getElementById('inputUniversityMain').value;
-				if
-				( (groupe_two_comma_separated_Values_Array.length > 2 || inputGenreMain !== '' || inputUniversityMain !== '') && inputRomanNumberMain === '') {
-					facultativeCommaIfRomanNumber = ', ';
-				}
 				groupe_two_comma_separated_Values = addCommaBetweenExceptLastOne(groupe_two_comma_separated_Values_Array);
 
 				if (inputBookOrArticle == 0) { // LIVRE
+					var inputRomanNumberMain = document.getElementById('inputRomanNumberMain').value;
+					var inputGenreMain = document.getElementById('inputGenreMain').value;
+					var inputUniversityMain = document.getElementById('inputUniversityMain').value;
+					if
+					( (groupe_two_comma_separated_Values_Array.length > 2 || inputGenreMain !== '' || inputUniversityMain !== '') && inputRomanNumberMain === '') {
+						facultativeCommaIfRomanNumber = ', ';
+					}
+
 					var inputFacultativeInputsBookArray = [];
 					if (inputRomanNumberMain !== '') {
 						if (groupe_two_comma_separated_Values_Array.length > 2 || inputGenreMain !== '' || inputUniversityMain !== '') {
