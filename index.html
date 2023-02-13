@@ -104,6 +104,7 @@
 					</br>
 					Lieu de publication (Facultatif) : <input type="text" id="inputLocationMain" placeholder="Paris" size="100" title="Type in a name"></br>
 					<span id="spanWithBookInputs">
+						Informations complémentaires édition (Facultatif) : <input type="text" id="inputBonusInfoEditionMain" placeholder="trad. fr. d’après la 2e éd. anglaise de 1957, 1re éd. Oxford" size="100" title="Type in a name"></br>
 						N° Romain de Volume (Facultatif) : <input type="text" id="inputRomanNumberMain" placeholder="v" size="100" title="Type in a name"></br>
 					  Genre (Facultatif) : <input type="text" id="inputGenreMain" placeholder="rapport de fouille, thèse de doctorat..." size="100" title="Type in a name"></br>
 						Établissement / Université (Facultatif) : <input type="text" id="inputUniversityMain" placeholder="Université Bordeaux Montaigne" size="100" title="Type in a name">
@@ -184,11 +185,10 @@
 				if (isCheckedCheckboxElectronicDocument) { electronicValues = getElectronicValues() } else { electronicValues = '' };
 				var facultativeCommaIfArticle = '';
 				var italicEditorIfArticle = '';
-				var editingPublicationLocationValue = '';
-				editingPublicationLocationValue = ', ' + editingPublicationLocation;
 				var inputBookOrArticle = document.getElementById('inputBookOrArticle').value;
 				var inputFacultativeInputsBookValues = '';
-
+				var inputBonusInfoEditionMain = '';
+				if (document.getElementById('inputBonusInfoEditionMain').value !== '' && inputBookOrArticle == 0) {inputBonusInfoEditionMain = ' ' + '[' + document.getElementById('inputBonusInfoEditionMain').value + ']'}
 				var inputRomanNumberMain = '';
 				var inputGenreMain = '';
 				var inputUniversityMain = '';
@@ -276,7 +276,7 @@
 					facultativeCommaIfGroupeThree = ', '
 				}
 
-				return spaceBetweenAuthors(facultativeAuthors) + " " +  editionOrDirectionOrCollection  + facultativeDateOfFirstPublication + " (" +  facultativeDatePublication + ')&nbsp;: ' + groupe_two_comma_separated_Values + facultativeCommaIfRomanNumber + inputFacultativeInputsBookValues + facultativeCommaIfGroupeTwo + italicEditorIfArticle + facultativeCommaIfArticle + numberEditor + facultativeCommaIfGroupeThree + groupe_three_comma_separated_Values + electronicValues + '.';
+				return spaceBetweenAuthors(facultativeAuthors) + " " +  editionOrDirectionOrCollection  + facultativeDateOfFirstPublication + " (" +  facultativeDatePublication + ')&nbsp;: ' + groupe_two_comma_separated_Values + facultativeCommaIfRomanNumber + inputFacultativeInputsBookValues + facultativeCommaIfGroupeTwo + italicEditorIfArticle + facultativeCommaIfArticle + numberEditor + inputBonusInfoEditionMain + facultativeCommaIfGroupeThree + groupe_three_comma_separated_Values + electronicValues + '.';
 			}
 
 			function createContainerPublication(authors, dateOfPublication, dateOfFirstPublication, mainPublicationEditor, pagesFromMainPublication, editingPublicationLocation, titleOfWritingWork, editionOrDirectionOrCollection, numberEditor)
