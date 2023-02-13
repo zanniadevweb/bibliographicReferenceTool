@@ -76,7 +76,7 @@
 				<div style="display: flex; align-items: center">
 					<label>Auteurs (Facultatif) :</label>
 					<multi-input>
-						<input id="inputAuthorsMain" list="speakers" placeholder="Dupont, S." title="Type in a name"><datalist id="speakers"></datalist>
+						<input id="inputAuthorsMain" list="speakers" placeholder="Dupont, S., M., Dupond" title="Type in a name"><datalist id="speakers"></datalist>
 					</multi-input>
 					<button id="getMain">Ajouter +1</button>
 				</div>
@@ -95,7 +95,7 @@
 				Pages (Facultatif) : <input type="text" id="inputPagesMain" placeholder="467-489" size="100" title="Type in a name">
 				</br>
 
-				<span id="spanWithShortCitationUselessItems" style="display: none;">
+				<span id="spanWithShortCitationUselessItems">
 						Collection / Revue (Facultatif) : <input type="text" id="inputEditorMain" placeholder="Gallia Suppl." size="70" title="Type in a name">
 
 						N° Collection / Tomaison (Facultatif) : <input type="text" id="inputNumberEditorMain" placeholder="59" size="10" title="Type in a name">
@@ -129,7 +129,7 @@
 				<div style="display: flex; align-items: center">
 					<label>Auteurs (Facultatif) :</label>
 					<multi-input>
-						<input id="inputAuthorsInside" list="speakers" placeholder="Dupont, S." title="Type in a name"><datalist id="speakers"></datalist>
+						<input id="inputAuthorsInside" list="speakers" placeholder="Dupont, S., M., Dupond" title="Type in a name"><datalist id="speakers"></datalist>
 					</multi-input>
 					<button id="getInside">Ajouter +1</button>
 				</div>
@@ -531,6 +531,7 @@
 				var isCheckedCheckboxInsidePublication = checkboxInsidePublication.checked;
 				var spanWithInsidePublicationInputs = document.getElementById("spanWithInsidePublicationInputs");
 				var spanWithShortCitationSelectMain = document.getElementById("spanWithShortCitationSelectMain");
+				hideShortCitationUselessItemsIfBook();
 
 				if (isCheckedCheckboxInsidePublication && inputBookOrArticle == 0) // LIVRE
 				{
@@ -548,6 +549,7 @@
 				hideInsidePublicationInputs()
 				var inputBookOrArticle = document.getElementById('inputBookOrArticle').value;
 				var spanIsContributionCheckBox = document.getElementById("spanIsContributionCheckBox");
+				hideShortCitationUselessItemsIfBook();
 
 				if (inputBookOrArticle == 0) // LIVRE
 				{
@@ -565,13 +567,13 @@
 				var inputBookOrArticle = document.getElementById('inputBookOrArticle').value;
 				var inputShortCitationMain = document.getElementById('inputShortCitationMain').value;
 				var spanWithShortCitationUselessItems = document.getElementById("spanWithShortCitationUselessItems");
+				var checkboxInsidePublication = document.getElementById('checkboxInsidePublication');
+				var isCheckedCheckboxInsidePublication = checkboxInsidePublication.checked;
+				disableAndHideInputs(spanWithShortCitationUselessItems, false);
 
-				if (inputShortCitationMain == 0 && inputBookOrArticle == 0) // Citation Courte + LIVRE
+				if (isCheckedCheckboxInsidePublication && inputShortCitationMain == 0 && inputBookOrArticle == 0) // Citation Courte + LIVRE
 				{
 					disableAndHideInputs(spanWithShortCitationUselessItems);
-				} else
-				{
-					disableAndHideInputs(spanWithShortCitationUselessItems, false);
 				}
 			}
 
