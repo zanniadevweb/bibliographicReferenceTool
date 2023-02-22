@@ -1,13 +1,13 @@
 <!DOCTYPE HTML>
 <html lang="en">
 	<head>
-		<!-- https://www.zotero.org/support/dev/web_api/v3/basics -->
 		<title>Ausonius Bibliography Converter - Alexandre ZANNI</title>
 		<meta charset="utf-8" />
+		<link rel="stylesheet" href="assets/css/main.css" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
 	</head>
 	<style>
-	body {
+	/* body {
 		color:#454545;
 	  font-family: 'Google Sans', sans-serif;
 	  margin: 40px
@@ -47,18 +47,56 @@
     color: black
 	}
 
-	a.signature {
-		color:blue
-	}
-
 	a:hover.signature {
 		color:darkblue;
 		font-weight: bold;
+	} */
+
+
+	multi-input {
+		display: inline-block;
+	  margin: 0 20px 20px 0;
+		font-size: 16.5pt;
+		font-weight: 300;
+		height: 2.75em;
+		line-height: 1.65;
+		background: white;
+	}
+
+	.item {
+		padding: 0px 0px 10px 10px;
+		margin: 5px 5px 5px;
+		color:black;
+	}
+
+	label {
+		margin: 0 20px 20px 0;
+	}
+
+	input[type="checkbox"] {
+		width: 25px;
+		height: 25px;
+		color: red;
+	}
+
+	body {
+	  margin: 15%
+	}
+
+	a:hover.signature {
+		font-weight: bold;
+	}
+
+	a.signature {
+		color:black
 	}
 
 	</style>
 
-		<h1>Générateur automatique de références selon la norme Ausonius Éditions (v. 1.0)</h1>
+		<body>
+		<h1>Générateur automatique de références selon la norme <a href="https://ausoniuseditions.u-bordeaux-montaigne.fr/accueil">Ausonius Éditions</a> (v. 1.0)</h1>
+		<section id="wrapper">
+		<section id="one" class="wrapper spotlight style1" style="padding: 50px 100px 50px;">
 		<h3> Exemples de résultats :</h3>
 		Feugère, M., I., Rodriguez, A. dir. (2008)&nbsp;: <i>Plaidoyer pour la ‘petite épigraphie’&nbsp;: l’exemple de la cité de Béziers</i>, <i>Gallia Suppl. 59</i>, 467-489, Paris.
 		</br>
@@ -76,7 +114,7 @@
 		</br>
 		<span id ="spanIsContributionCheckBox"><b>L'ouvrage doit en citer un autre ? Cocher si oui : </b><input id="checkboxInsidePublication" type="checkbox" onchange="hideInsidePublicationInputs()"></span>
 		<span id="spanWithShortCitationSelectMain" style="display: none;">
-			<b>Référence principale avec citation courte :</b> 		<select id="inputShortCitationMain" onchange="hideShortCitationUselessItemsIfBook()">
+		</br></br><b>Référence principale avec citation courte :</b> 		<select id="inputShortCitationMain" onchange="hideShortCitationUselessItemsIfBook()" style="width: 150px">
 																															<option value="0">Oui</option>
 																															<option value="1">Non</option>
 																														</select>
@@ -94,7 +132,7 @@
 				<div style="display: flex; align-items: center">
 					<label>Auteurs (Facultatif) :</label>
 					<multi-input>
-						<input id="inputAuthorsMain" list="speakers" placeholder="Dupont, S., M." title="Type in a name"><datalist id="speakers"></datalist>
+						<input class"inputAuthors" id="inputAuthorsMain" list="speakers" placeholder="Dupont, S., M." title="Type in a name" style="font-size: 16.5pt;"><datalist id="speakers"></datalist>
 					</multi-input>
 					<button id="getMain">Ajouter +1 Auteur</button>
 				</div>
@@ -148,7 +186,7 @@
 				<div style="display: flex; align-items: center">
 					<label>Auteurs (Facultatif) :</label>
 					<multi-input>
-						<input id="inputAuthorsInside" list="speakers" placeholder="Dupont, S., M." title="Type in a name"><datalist id="speakers"></datalist>
+						<input class"inputAuthors" id="inputAuthorsInside" list="speakers" placeholder="Dupont, S., M." title="Type in a name" style="font-size: 16.5pt;"><datalist id="speakers"></datalist>
 					</multi-input>
 					<button id="getInside">Ajouter +1 Auteur</button>
 				</div>
@@ -628,9 +666,19 @@
 		</script>
 
   <script src="assets/js/multi-input.js"></script>
-</br></br>
+	</br></br>
+	</section>
+	</section>
 	</body>
-	<footer>
-		<p>© 22-02-2023 Développeur : <a class="signature" href='https://ausonius.u-bordeaux-montaigne.fr/annuaire?chercheur=346'>Alexandre Zanni (Doctorant Archéologie, UMR 5607 Ausonius)</a> ; Consultant et testeur : Julien Gravier (Doctorant Archéologie, UMR 5607 Ausonius)</p>
-	</footer>
+	<section id="footer">
+		<div class="inner">
+			<ul class="copyright">
+				</br>
+				<li>&copy; 22-02-2023</li></br>
+				<li>Développeur : <a class="signature" href='https://ausonius.u-bordeaux-montaigne.fr/annuaire?chercheur=346'>Alexandre Zanni (Doctorant Archéologie, UMR 5607 Ausonius)</a></li></br>
+				<li>Consultant et testeur : Julien Gravier (Doctorant Archéologie, UMR 5607 Ausonius)</li></br>
+				<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+			</ul>
+		</div>
+	</section>
 </html>
