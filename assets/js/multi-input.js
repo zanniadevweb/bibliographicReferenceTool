@@ -130,41 +130,53 @@ class MultiInput extends HTMLElement {
 
   // Called when text is entered or keys pressed in the input element.
   _handleKeyup(event) {
-    const mainOrInsideInputId = event.currentTarget.id;
-    var getButton = '';
-    var inputAuthorsValue = '';
+    // if (event.currentTarget !== undefined) {
+      const mainOrInsideInputId = event.currentTarget.id;
+      var getButton = '';
+      var inputAuthorsValue = '';
 
-    if (mainOrInsideInputId == "inputAuthorsMain") {
-      inputAuthorsValue = document.getElementById('inputAuthorsMain').value;
-      getButton = document.getElementById('getMain');
-    }
-    if (mainOrInsideInputId == "inputAuthorsInside") {
-      inputAuthorsValue = document.getElementById('inputAuthorsInside').value;
-      getButton = document.getElementById('getInside');
-    }
-
-    const itemToDelete = event.target.previousElementSibling;
-    const value = this._input.value;
-    // On Backspace, delete the div.item to the left of the input
-    if (value ==='' && event.key === 'Backspace' && itemToDelete) {
-      this._deleteItem(itemToDelete);
-    }
-
-    if (value.length >= 4) {
-      getButton.onclick = () => {
-        this._addItem(inputAuthorsValue);
-        const multiInput = document.querySelector('multi-input');
-        const values = document.querySelector('#values');
-
-        // if (multiInput.getValues().length > 0) {
-        //   values.textContent = `Got ${multiInput.getValues().join(' and ')}!`;
-        // } else {
-        //   values.textContent = 'Got noone  :`^(.';
-        // }
-
-        document.querySelector('input').focus();
+      if (mainOrInsideInputId == "inputAuthorsMain") {
+        inputAuthorsValue = document.getElementById('inputAuthorsMain').value;
+        getButton = document.getElementById('getMain');
       }
-    }
+      if (mainOrInsideInputId == "inputAuthorsInside") {
+        inputAuthorsValue = document.getElementById('inputAuthorsInside').value;
+        getButton = document.getElementById('getInside');
+      }
+
+      const itemToDelete = event.target.previousElementSibling;
+      const value = this._input.value;
+      // On Backspace, delete the div.item to the left of the input
+      if (value ==='' && event.key === 'Backspace' && itemToDelete) {
+        this._deleteItem(itemToDelete);
+      }
+
+      if (value.length >= 4) {
+        getButton.onclick = () => {
+          this._addItem(inputAuthorsValue);
+          const multiInput = document.querySelector('multi-input');
+          const values = document.querySelector('#values');
+
+          // if (multiInput.getValues().length > 0) {
+          //   values.textContent = `Got ${multiInput.getValues().join(' and ')}!`;
+          // } else {
+          //   values.textContent = 'Got noone  :`^(.';
+          // }
+
+          document.querySelector('input').focus();
+        }
+      }
+    // }
+    // else {
+    //   var getButton = '';
+    //   getButton = document.getElementById('getMain');
+    //   getButton.onclick = () => {
+    //     this._addItem(inputAuthorsValue);
+    //     const multiInput = document.querySelector('multi-input');
+    //     const values = document.querySelector('#values');
+    //     document.querySelector('input').focus();
+    //   }
+    // }
   }
 }
 
