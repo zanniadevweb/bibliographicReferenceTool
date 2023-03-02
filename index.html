@@ -735,8 +735,6 @@
 				document.getElementById('inputDateFirstMain').value = '';
 				document.getElementById('inputBonusInfoEditionMain').value = '';
 				document.getElementById('inputRomanNumberMain').value = '';
-				document.getElementById('inputGenreMain').value = '';
-				document.getElementById('inputUniversityMain').value = '';
 
 				var title = '';
 				var edOrDirOrColl = 0;
@@ -746,6 +744,8 @@
 				var numberEditor = '';
 				var tagId = '';
 				var authorsTag = [];
+				var genre = '';
+				var university = '';
 				authorsTag = ['700', '701', '702'];
 				if (document.getElementById('200') !== null && document.getElementById('200').children.length > 0) {
 					title = getAllChildrenValues(document.getElementById('200').children, 'f');
@@ -757,6 +757,10 @@
 				if (document.getElementById('210') !== null && document.getElementById('210').children.length > 0) {
 					location = getSingleChildValue(document.getElementById('210').children, 'a').replace('.','');
 					datePub = getSingleChildValue(document.getElementById('210').children, 'd');
+				}
+				if (document.getElementById('214') !== null && document.getElementById('214').children.length > 0) {
+					location = getSingleChildValue(document.getElementById('214').children, 'a').replace('.','');
+					datePub = getSingleChildValue(document.getElementById('214').children, 'd');
 				}
 				if (document.getElementById('225') !== null && document.getElementById('225').children.length > 0) {
 					editor = getSingleChildValue(document.getElementById('225').children, 'a');
@@ -772,6 +776,12 @@
 						}
 					}
 				}
+				if (document.getElementById('328') !== null && document.getElementById('328').children.length > 0) {
+					genre = getSingleChildValue(document.getElementById('328').children, 'b');
+				}
+				if (document.getElementById('711') !== null && document.getElementById('711').children.length > 0) {
+					university = getSingleChildValue(document.getElementById('711').children, 'a');
+				}
 				document.getElementById('inputBookOrArticle').value = 0; // L'API ne permet pas de distinguer Ouvrage et Article sur le SUDOC.
 				document.getElementById('inputTitleMain').value = title;
 				document.getElementById('inputEdOrDirOrCollMain').value = edOrDirOrColl;
@@ -779,6 +789,8 @@
 				document.getElementById('inputLocationMain').value = location;
 				document.getElementById('inputEditorMain').value = editor;
 				document.getElementById('inputNumberEditorMain').value = numberEditor;
+				document.getElementById('inputGenreMain').value = genre;
+				document.getElementById('inputUniversityMain').value = university;
 			}
 
 			function recursiveGetAllAuthors(tagId) {
