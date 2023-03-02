@@ -110,7 +110,7 @@
 		<b><a target="_blank" href="http://www.sudoc.abes.fr/cbs/xslt/DB=2.1/SET=13/TTL=1/START_WELCOME.fr">Cliquez pour ouvrir le SUDOC</a></b></br>
 		<!-- <iframe title="Sudoc - Recherche Simple" width="1200" height="500" src="http://www.sudoc.abes.fr/cbs/xslt/DB=2.1/SET=13/TTL=1/START_WELCOME.fr"></iframe></br> -->
 		<div id="resultOuterContainerSudocApi" style="display: none;"><div id="resultInnerContainerSudocApi">...</div></div>
-		<b>Identifiant pérenne de la notice (PPN) sur SUDOC (N° après : 'https://www.sudoc.fr/'):</b></br>
+		<b>Identifiant pérenne de la notice (PPN) sur SUDOC (ex : Identifiant pérenne de la notice : N° après : 'https://www.sudoc.fr/'):</b></br>
 		<input type="text" id="inputPPN" placeholder="170583236" size="100" title="Type in a name"></br>
 		<button onclick="getXmlByPPN()" id="buttonConfirmPPN">CONFIRMER PPN</button></br></br></br>
 
@@ -470,7 +470,7 @@
 							lastElementArray = '';
  							facultativeLinkingWord = (' et al.').italics();
 						}
-					} else // CITATION LONGUE
+					} else if (inputShortCitationMain == 1) // CITATION LONGUE
 					{
 						facultativeLinkingWord = ' et ';
 					}
@@ -759,7 +759,7 @@
 				}
 				if (document.getElementById('701') !== null && document.getElementById('701').children.length > 0) {
 					if (programmaticAuthors.length === 0) {
-						programmaticAuthors = recursiveGetAllAuthors();
+						recursiveGetAllAuthors();
 					}
 				}
 				document.getElementById('inputBookOrArticle').value = 0; // L'API ne permet pas de distinguer Ouvrage et Article sur le SUDOC.
@@ -769,8 +769,6 @@
 				document.getElementById('inputLocationMain').value = location;
 				document.getElementById('inputEditorMain').value = editor;
 				document.getElementById('inputNumberEditorMain').value = numberEditor;
-				// document.getElementById('inputAuthorsMain').value = authors.join();
-				// document.getElementById('inputAuthorsMain').value = '';
 			}
 
 			function recursiveGetAllAuthors() {
@@ -788,13 +786,12 @@
 				} else {
 					firstNamesArray.push((firstName.slice(0, 1)));
 				}
-				authors.push(lastName + ', ' + firstNamesArray.join('. ') + '.');
+				programmaticAuthors.push(lastName + ', ' + firstNamesArray.join('. ') + '.');
 
 				document.getElementById('701').parentNode.removeChild(document.getElementById('701'));
 				if (document.getElementById('701') !== null && document.getElementById('701').children.length > 0) {
 					recursiveGetAllAuthors();
 				}
-				return authors;
 			}
 
 			function getAllChildrenValues(children, subFieldCodeToExclude) {
