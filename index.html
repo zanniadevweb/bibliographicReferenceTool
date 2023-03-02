@@ -5,6 +5,8 @@
 		<meta charset="utf-8" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+		<!-- USEFUL JQUERY EXCEPT FOR TRIGGERING CLICK EVENTS ? -->
 	</head>
 	<style>
 	/* body {
@@ -103,7 +105,20 @@
 		Dupont, M., Dupont, C. coll. (2008)&nbsp;: “Plaidoyer pour la ‘petite épigraphie’&nbsp;: l’exemple de la cité de Béziers” in&nbsp;: Feugère, M., I., Rodriguez, A. dir. 2008, <i>Gallia Suppl. 59</i>, 467-489, Paris.
 		<div id="resultSingle"></div>
 		<div id="resultContainerWithInside"></div>
-		</br></br>
+		</br>
+		<b>Moteur de recherche simple SUDOC :</b></br>
+		<b><a target="_blank" href="http://www.sudoc.abes.fr/cbs/xslt/DB=2.1/SET=13/TTL=1/START_WELCOME.fr">Cliquez pour ouvrir le SUDOC</a></b></br>
+		<!-- <iframe title="Sudoc - Recherche Simple" width="1200" height="500" src="http://www.sudoc.abes.fr/cbs/xslt/DB=2.1/SET=13/TTL=1/START_WELCOME.fr"></iframe></br> -->
+		<div id="resultOuterContainerSudocApi" style="display: none;"><div id="resultInnerContainerSudocApi">...</div></div>
+		<b>PPN SUDOC :</b></br>
+		<input type="text" id="inputPPN" placeholder="170583236" size="100" title="Type in a name"></br>
+		<button onclick="getXmlByPPN()" id="buttonConfirmPPN">CONFIRMER PPN</button></br></br></br>
+
+		<h2>Résultat :</h2>
+		<span id="spanResult" style="font-family: 'Arial'; font-size: 1em"><h3>...</h3></span></br></br></br>
+
+		<h2> Valider PPN ou compléter ci-dessous avant de cliquer sur "Générer Référence" :</h2>
+
 
 		<b>Type d'ouvrage : livre ou article ?</b> <select onchange="hideIsContributionCheckBox()" id="inputBookOrArticle">
 																								<option value="0">Livre</option>
@@ -120,13 +135,10 @@
 																														</select>
 		</span>
 		</br></br>
-		<button onclick="buildReference()" id="buttonGenerateReference">GENERER RÉFERENCE</button>
+		<button onclick="buildReference()" id="buttonGenerateReference">GÉNÉRER RÉFERENCE</button>
 		</br></br>
-		<h2>Résultat :</h2>
-		<span id="spanResult" style="font-family: 'Arial'; font-size: 1em"><h3>...</h3></span>
 
 		</br></br>
-		<h2> Remplir les champs ci-dessous avant de cliquer sur "Générer Résultat" :</h2>
 		<span id="spanSaisir"><h3>Référence principale :</h3></span>
 
 				<div style="display: flex; align-items: center">
@@ -208,6 +220,10 @@
 
 			<script>
 
+			// ----------------- VARIABLES GLOBALES -------------------
+			programmaticAuthors = [];
+			// --------------------------------------------------------
+
 			var authors = [];
 			var mainPublication = [];
 			var insidePublication = [];
@@ -265,7 +281,11 @@
 					italicEditorIfArticle = mainPublicationEditor.italics();
 				}
 
-				facultativeAuthors = defaultValueIfEmptyValue(authors, 's.n.');
+				if (programmaticAuthors.length > 0 && authors === '') {
+					facultativeAuthors = addAuthors(programmaticAuthors, []);
+				} else {
+					facultativeAuthors = defaultValueIfEmptyValue(authors, 's.n.');
+				}
 
 				facultativeDateOfFirstPublication = formattedDateOfFirstPublication(dateOfFirstPublication);
 				facultativeDatePublication = defaultValueIfEmptyValue(dateOfPublication, 'à paraître');
@@ -663,6 +683,152 @@
 				}
 			}
 
+			function getXmlByPPN(callback) {
+				var sudocPPN = document.getElementById('inputPPN').value;
+				if (sudocPPN !== '') {
+					var url = 'https://www.sudoc.fr/' + sudocPPN + '.xml';
+					console.log(url);
+					var xobj = new XMLHttpRequest();
+					xobj.overrideMimeType("application/json");
+					xobj.open('GET', url, true);
+					xobj.onreadystatechange = function () {
+								if (xobj.readyState == 4 && xobj.status == "200") {
+									response = xobj.responseText;
+									parser = new DOMParser();
+									xmlDoc = parser.parseFromString(response,"text/xml");
+									var record = xmlDoc.getElementsByTagName("record");
+									var dataFields = xmlDoc.getElementsByTagName("datafield");
+									var htmlDataField = '';
+									var serializedDataFields = [];
+
+									for (iRec = 0; iRec < dataFields.length; iRec++) {
+										stringifiedDataField = dataFields[iRec].outerHTML;
+										htmlDataField = stringifiedDataField.replaceAll('tag','id')
+										serializedDataFields.push(htmlDataField)
+									}
+									var htmlDataFields = '';
+									htmlDataFields = stringToHTML(serializedDataFields.join());
+									if (document.getElementById('resultInnerContainerSudocApi') === null) {
+										document.getElementById('resultOuterContainerSudocApi').innerHTML =  '<div id="resultInnerContainerSudocApi">...</div>';
+									}
+									document.getElementById('resultInnerContainerSudocApi').outerHTML = htmlDataFields.innerHTML;
+									fillsBiblioInputsBook(htmlDataFields, sudocPPN);
+								}
+					};
+					xobj.send(null);
+				}
+			}
+
+			function stringToHTML(str) {
+				var dom = document.createElement('fakeDiv');
+				dom.innerHTML = str;
+				return dom;
+			};
+
+			function fillsBiblioInputsBook(htmlDataFields, sudocPPN) {
+				document.getElementById('checkboxIsElectronicDocument').checked = false;
+				document.getElementById('checkboxInsidePublication').checked = false;
+				document.getElementById("inputShortCitationMain").value = 1;
+				document.getElementById('inputPagesMain').value = '';
+				document.getElementById('inputDateFirstMain').value = '';
+				document.getElementById('inputBonusInfoEditionMain').value = '';
+				document.getElementById('inputRomanNumberMain').value = '';
+				document.getElementById('inputGenreMain').value = '';
+				document.getElementById('inputUniversityMain').value = '';
+
+				var title = '';
+				var edOrDirOrColl = 0;
+				var datePub = '';
+				var location = '';
+				var editor = '';
+				var numberEditor = '';
+				if (document.getElementById('200') !== null && document.getElementById('200').children.length > 0) {
+					title = getAllChildrenValues(document.getElementById('200').children, 'f');
+					edOrDirOrColl = getSingleChildValue(document.getElementById('200').children, 'f');
+					if (getSingleChildValue(document.getElementById('200').children, 'f').includes('edited by')) {
+						edOrDirOrColl = 0;
+					}
+				}
+				if (document.getElementById('210') !== null && document.getElementById('210').children.length > 0) {
+					location = getSingleChildValue(document.getElementById('210').children, 'a').replace('.','');
+					datePub = getSingleChildValue(document.getElementById('210').children, 'd');
+				}
+				if (document.getElementById('225') !== null && document.getElementById('225').children.length > 0) {
+					editor = getSingleChildValue(document.getElementById('225').children, 'a');
+					numberEditor = getSingleChildValue(document.getElementById('225').children, 'v');
+				}
+				if (document.getElementById('701') !== null && document.getElementById('701').children.length > 0) {
+					if (programmaticAuthors.length === 0) {
+						programmaticAuthors = recursiveGetAllAuthors();
+					}
+				}
+				document.getElementById('inputBookOrArticle').value = 0; // L'API ne permet pas de distinguer Ouvrage et Article sur le SUDOC.
+				document.getElementById('inputTitleMain').value = title;
+				document.getElementById('inputEdOrDirOrCollMain').value = edOrDirOrColl;
+				document.getElementById('inputDateMain').value = datePub;
+				document.getElementById('inputLocationMain').value = location;
+				document.getElementById('inputEditorMain').value = editor;
+				document.getElementById('inputNumberEditorMain').value = numberEditor;
+				// document.getElementById('inputAuthorsMain').value = authors.join();
+				// document.getElementById('inputAuthorsMain').value = '';
+			}
+
+			function recursiveGetAllAuthors() {
+				var lastName = '';
+				var firstName = '';
+				var firstNamesArray = [];
+
+				lastName = getSingleChildValue(document.getElementById('701').children, 'a');
+				firstName = getSingleChildValue(document.getElementById('701').children, 'b');
+				if (firstName.split(' ').length > 0) {
+					firstNames = firstName.split(' ');
+					// console.log(firstNames);
+					for (var iFirstNames = 0; iFirstNames < firstNames.length; iFirstNames++) {
+						// console.log(firstNames[iFirstNames])
+						firstNamesArray.push((firstNames[iFirstNames].slice(0, 1)));
+					}
+				} else {
+					firstNamesArray.push((firstName.slice(0, 1)));
+				}
+				// console.log(firstNamesArray)
+				authors.push(lastName + ', ' + firstNamesArray.join('. ') + '.');
+
+				document.getElementById('701').parentNode.removeChild(document.getElementById('701'));
+				if (document.getElementById('701') !== null && document.getElementById('701').children.length > 0) {
+					recursiveGetAllAuthors();
+				}
+				return authors;
+			}
+
+			function getAllChildrenValues(children, subFieldCodeToExclude) {
+				var childrenValues = [];
+				var childOuterHTML = '';
+				var childInnerHTML = '';
+				for (var iChildren = 0; iChildren < children.length; iChildren++) {
+					childOuterHTML = children[iChildren].outerHTML;
+					childInnerHTML = children[iChildren].innerHTML;
+					if (!(childOuterHTML.includes('code=\"'+subFieldCodeToExclude+'\"'))) {
+						childrenValues.push(childInnerHTML)
+					}
+				}
+				return childrenValues.join(' ');
+			}
+
+			function getSingleChildValue(children, subFieldCodeToInclude) {
+				var childrenValues = [];
+				var childOuterHTML = '';
+				var childInnerHTML = '';
+				for (var iChildren = 0; iChildren < children.length; iChildren++) {
+					childOuterHTML = children[iChildren].outerHTML;
+					childInnerHTML = children[iChildren].innerHTML;
+					if ((childOuterHTML.includes('code=\"'+subFieldCodeToInclude+'\"'))) {
+						childrenValues.push(childInnerHTML)
+					}
+				}
+				return childrenValues.join(' ');
+			}
+
+
 		</script>
 
   <script src="assets/js/multi-input.js"></script>
@@ -674,6 +840,7 @@
 		<div class="inner">
 			<ul class="copyright">
 				</br>
+				Mise à jour du 02/03/2023 : Ajout fonctionnalité interrogation du SUDOC via un n°PPN d'ouvrage pour pré-remplir les champs. Aucune case ne peut être cochée en ce but. Seuls les livres sont concernés par cette fonctionnalité.</br></br>
 				<li>&copy; 22-02-2023</li></br>
 				<li>Développeur : <a class="signature" href='https://ausonius.u-bordeaux-montaigne.fr/annuaire?chercheur=346'>Alexandre Zanni (Doctorant Archéologie, UMR 5607 Ausonius)</a></li></br>
 				<li>Consultant et testeur : Julien Gravier (Doctorant Archéologie, UMR 5607 Ausonius)</li></br>
