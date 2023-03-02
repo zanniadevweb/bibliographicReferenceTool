@@ -753,6 +753,12 @@
 					if (getSingleChildValue(document.getElementById('200').children, 'f').includes('edited by')) {
 						edOrDirOrColl = 0;
 					}
+					if (getSingleChildValue(document.getElementById('200').children, 'f').includes('sous la direction')) {
+						edOrDirOrColl = 1;
+					}
+					if (getSingleChildValue(document.getElementById('200').children, 'g').includes('sous la direction')) {
+						edOrDirOrColl = 1;
+					}
 				}
 				if (document.getElementById('210') !== null && document.getElementById('210').children.length > 0) {
 					location = getSingleChildValue(document.getElementById('210').children, 'a').replace('.','');
@@ -765,6 +771,10 @@
 				if (document.getElementById('225') !== null && document.getElementById('225').children.length > 0) {
 					editor = getSingleChildValue(document.getElementById('225').children, 'a');
 					numberEditor = getSingleChildValue(document.getElementById('225').children, 'v');
+				}
+				if (document.getElementById('461') !== null && document.getElementById('461').children.length > 0) {
+					editor = getSingleChildValue(document.getElementById('461').children, 't');
+					numberEditor = getSingleChildValue(document.getElementById('461').children, 'v');
 				}
 				if (programmaticAuthors.length === 0) {
 					for (var iAuthorsTag = 0; authorsTag.length; iAuthorsTag++) {
